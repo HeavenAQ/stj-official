@@ -1,5 +1,4 @@
-import React, { FC, useState } from "react";
-import { Lang } from "./types";
+import { FC, useEffect, useState } from "react";
 import { sakes, SakeInfo, SakeDescription } from "./data/sakes";
 import Markdown from "react-markdown";
 
@@ -99,8 +98,17 @@ interface SakeCardProps {
 const SakeCard: FC<SakeCardProps> = ({ id, sake }) => {
   const isImgLeft = id % 2 === 0;
 
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.replace("#", "");
+      const element = document.getElementById(id);
+      element?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
+
   return (
-    <div id={id.toString()}>
+    <div id={sake.id}>
       <div className="gap-8 sm:gap-10 lg:inline-grid lg:grid-cols-2">
         {isImgLeft && (
           <div className="hidden list-disc lg:grid">

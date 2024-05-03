@@ -1,5 +1,3 @@
-import { Lang } from "../types";
-
 export interface SakeDescription {
   title?: string;
   itemInfo: string;
@@ -139,9 +137,11 @@ export const sakes = {
     const sakeTitles = this.chn;
     const sakeDescriptions = chnSakeDescriptions;
     const sakeSubtitles = chnSakeSubtitles;
+    const id = ["yukikura", "dennyu", "hatsuume", "takanoi", "ginjo", "gatao"];
     return sakeTitles.map((title, idx) => ({
       title,
       subtitle: sakeSubtitles[idx],
+      id: id[idx],
       description: sakeDescriptions[idx],
       images: [serviceImages[idx]],
     }));
@@ -151,6 +151,7 @@ export const sakes = {
 export interface SakeInfo {
   title: string;
   subtitle?: string;
+  id: string;
   description: SakeDescription;
   images: string[];
 }
