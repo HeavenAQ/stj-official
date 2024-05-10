@@ -35,20 +35,20 @@ const SakeDescriptionTabs: FC<SakeDescriptionProps> = ({ description }) => {
           className={`relative grid grid-cols-3 mx-auto rounded-lg after:absolute after:inset-0 after:w-[calc(100%/3)] after:bg-gray-200 after:rounded-tl-lg after:rounded-tr-lg after:-z-10 isolate ${activeTabStyle()} after:duration-300`}
         >
           <button
-            className="inline-block p-2 rounded-t-lg border-b-2 border-transparent duration-300 cursor-pointer hover:border-gray-300 hover:text-zinc-300"
+            className="inline-block p-2 rounded-t-lg border-b-2 border-transparent duration-300 cursor-pointer md:hover:border-gray-500"
             onClick={() => setActiveTab(0)}
           >
             商品描述
           </button>
           <button
-            className="inline-block p-2 rounded-t-lg border-b-2 border-transparent duration-300 cursor-pointer hover:text-zinc-300 hover:border-zinc-300"
+            className="inline-block p-2 rounded-t-lg border-b-2 border-transparent duration-300 cursor-pointer md:hover:border-gray-500"
             aria-current="page"
             onClick={() => setActiveTab(1)}
           >
             商品詳情
           </button>
           <button
-            className="inline-block p-2 rounded-t-lg border-b-2 border-transparent duration-300 cursor-pointer hover:text-zinc-300 hover:border-zinc-300"
+            className="inline-block p-2 rounded-t-lg border-b-2 border-transparent duration-300 cursor-pointer md:hover:border-gray-500"
             onClick={() => setActiveTab(2)}
           >
             其他資訊
