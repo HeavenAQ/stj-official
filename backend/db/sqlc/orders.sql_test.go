@@ -2,9 +2,9 @@ package db
 
 import (
 	"context"
+	"stj-ecommerce/utils"
 	"testing"
 	"time"
-	"tsn-ecommerce/utils"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"

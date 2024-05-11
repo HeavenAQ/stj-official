@@ -52,5 +52,5 @@ frontend/.DS_Store
 frontend/.idea/
 
 # backend
-db-data/
+backend/db-data
 cover.cov

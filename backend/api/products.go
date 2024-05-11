@@ -2,7 +2,7 @@ package api
 
 import (
 	"net/http"
-	db "tsn-ecommerce/db/sqlc"
+	db "stj-ecommerce/db/sqlc"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"

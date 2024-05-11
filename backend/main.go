@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"tsn-ecommerce/api"
-	db "tsn-ecommerce/db/sqlc"
+	"stj-ecommerce/api"
+	db "stj-ecommerce/db/sqlc"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"

@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
+	"stj-ecommerce/utils"
 	"testing"
-	"tsn-ecommerce/utils"
 
 	"github.com/stretchr/testify/require"
 )
