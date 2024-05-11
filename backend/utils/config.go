@@ -34,3 +34,20 @@ func LoadConfig(path string) (config Config, err error) {
 	err = viper.Unmarshal(&config)
 	return
 }
+
+// load config from environment variables
+func LoadConfigFromEnv() (config Config) {
+	config = Config{
+		DBDriver:            viper.GetString("DB_DRIVER"),
+		DBPassword:          viper.GetString("DB_PASSWORD"),
+		DBPort:              viper.GetString("DB_PORT"),
+		DBHost:              viper.GetString("DB_HOST"),
+		DBName:              viper.GetString("DB_NAME"),
+		DBUser:              viper.GetString("DB_USER"),
+		DBSSLMode:           viper.GetString("DB_SSL_MODE"),
+		TokenSyemmetricKey:  viper.GetString("TOKEN_SYMMETRIC_KEY"),
+		AccessTokenDuration: viper.GetDuration("ACCESS_TOKEN_DURATION"),
+		Port:                viper.GetString("PORT"),
+	}
+	return
+}

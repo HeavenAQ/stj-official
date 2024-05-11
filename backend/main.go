@@ -51,6 +51,9 @@ func main() {
 	defer store.Close()
 
 	// set up server
-	server := api.NewServer(store, config)
+	server, err := api.NewServer(store, config)
+	if err != nil {
+		log.Fatalf("cannot create server: %v", err)
+	}
 	server.Start()
 }

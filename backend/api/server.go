@@ -40,11 +40,12 @@ func corsConfig() cors.Config {
 	return corsConf
 }
 
-func NewServer(store *db.Store, config utils.Config) *Server {
+func NewServer(store *db.Store, config utils.Config) (*Server, error) {
 	// setup token maker
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSyemmetricKey)
 	if err != nil {
 		log.Fatal("cannot create token maker")
+		return nil, err
 	}
 
 	// config server
@@ -53,5 +54,5 @@ func NewServer(store *db.Store, config utils.Config) *Server {
 	server.router.Use(cors.Default())
 	server.router.Use(cors.New(corsConfig()))
 	server.setupRouter()
-	return server
+	return server, nil
 }

@@ -16,10 +16,11 @@ var testStore *Store
 
 func TestMain(m *testing.M) {
 	// load .env file
-	config, err := utils.LoadConfig("../../.env")
+	config, err := utils.LoadConfig("../..")
 	if err != nil {
 		log.Printf(".env file not found: %v\n", err)
 		log.Printf("Using default environment variables\n")
+		config = utils.LoadConfigFromEnv()
 	}
 
 	// set up connection pool
