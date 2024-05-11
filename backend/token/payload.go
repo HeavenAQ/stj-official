@@ -31,3 +31,10 @@ func NewPayload(userEmail string, duration time.Duration) (*Payload, error) {
 	}
 	return payload, nil
 }
+
+func (p *Payload) Valid() error {
+	if time.Now().After(p.ExpiresAt.Time) {
+		return jwt.ErrTokenExpired
+	}
+	return nil
+}
