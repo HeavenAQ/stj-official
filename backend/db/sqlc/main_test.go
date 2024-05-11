@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"stj-ecommerce/utils"
 	"testing"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
 var testQueries *Queries
@@ -16,7 +16,7 @@ var testStore *Store
 
 func TestMain(m *testing.M) {
 	// load .env file
-	err := godotenv.Load("../../.env")
+	config, err := utils.LoadConfig("../../.env")
 	if err != nil {
 		log.Printf(".env file not found: %v\n", err)
 		log.Printf("Using default environment variables\n")
@@ -26,13 +26,13 @@ func TestMain(m *testing.M) {
 	ctx := context.Background()
 	dbSource := fmt.Sprintf(
 		"%s://%s:%s@%s:%s/%s?sslmode=%s",
-		os.Getenv("DB_DRIVER"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_SSL_MODE"),
+		config.DBDriver,
+		config.DBUser,
+		config.DBPassword,
+		config.DBHost,
+		config.DBPort,
+		config.DBName,
+		config.DBSSLMode,
 	)
 	testDBPool, err := pgxpool.New(ctx, dbSource)
 	if err != nil {

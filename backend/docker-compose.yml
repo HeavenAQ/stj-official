@@ -4,7 +4,8 @@ services:
   postgres:
     image: "postgres:latest"
     env_file:
-      - .env
+      - path: ./app.env
+        required: true
     ports:
       - "${DB_PORT}:${DB_PORT}"
     restart: "always"

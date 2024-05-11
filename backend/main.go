@@ -7,28 +7,28 @@ import (
 	"os"
 	"stj-ecommerce/api"
 	db "stj-ecommerce/db/sqlc"
+	"stj-ecommerce/utils"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/joho/godotenv"
 )
 
-func getDatabaseURL() string {
+func getDatabaseURL(config utils.Config) string {
 	dbSource := fmt.Sprintf(
 		"%s://%s:%s@%s:%s/%s?sslmode=%s",
-		os.Getenv("DB_DRIVER"),
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_HOST"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
-		os.Getenv("DB_SSL_MODE"),
+		config.DBDriver,
+		config.DBUser,
+		config.DBPassword,
+		config.DBHost,
+		config.DBPort,
+		config.DBName,
+		config.DBSSLMode,
 	)
 	return dbSource
 }
 
-func setupDatabaseStore() *db.Store {
+func setupDatabaseStore(config utils.Config) *db.Store {
 	ctx := context.Background()
-	dbSource := getDatabaseURL()
+	dbSource := getDatabaseURL(config)
 	testDBPool, err := pgxpool.New(ctx, dbSource)
 	if err != nil {
 		log.Printf("Unable to create connection pool: %v\n", err)
@@ -40,14 +40,17 @@ func setupDatabaseStore() *db.Store {
 }
 
 func main() {
-	// load .env file
-	godotenv.Load()
+	// load environment variables
+	config, err := utils.LoadConfig(".")
+	if err != nil {
+		log.Fatalf("cannot load config: %v", err)
+	}
 
 	// set up database
-	store := setupDatabaseStore()
+	store := setupDatabaseStore(config)
 	defer store.Close()
 
 	// set up server
-	server := api.NewServer(store)
+	server := api.NewServer(store, config)
 	server.Start()
 }

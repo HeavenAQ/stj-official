@@ -1,16 +1,21 @@
 package api
 
 import (
+	"log"
 	"net/http"
 	db "stj-ecommerce/db/sqlc"
+	"stj-ecommerce/token"
+	"stj-ecommerce/utils"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 type Server struct {
-	store  *db.Store
-	router *gin.Engine
+	config     utils.Config
+	store      *db.Store
+	router     *gin.Engine
+	tokenMaker token.Maker
 }
 
 func (server *Server) Start() error {
@@ -35,12 +40,18 @@ func corsConfig() cors.Config {
 	return corsConf
 }
 
-func NewServer(store *db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(store *db.Store, config utils.Config) *Server {
+	// setup token maker
+	tokenMaker, err := token.NewPasetoMaker(config.TokenSyemmetricKey)
+	if err != nil {
+		log.Fatal("cannot create token maker")
+	}
+
+	// config server
+	server := &Server{store: store, config: config, tokenMaker: tokenMaker}
 	server.router = gin.Default()
 	server.router.Use(cors.Default())
 	server.router.Use(cors.New(corsConfig()))
-
 	server.setupRouter()
 	return server
 }

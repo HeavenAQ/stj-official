@@ -1,8 +1,8 @@
 # Check if .env file exists
-ifeq ($(wildcard .env),)
+ifeq ($(wildcard app.env),)
     $(info No .env file found, proceeding without it...)
 else
-    include .env
+    include app.env
 endif
 
 migrate_up: 
