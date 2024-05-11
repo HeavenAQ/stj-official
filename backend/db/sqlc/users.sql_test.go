@@ -5,14 +5,18 @@ import (
 	"stj-ecommerce/utils"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 )
 
 func createRandomUser(t *testing.T) User {
 	// create a user with random data
 	arg := CreateUserParams{
-		Email:     utils.RandomNumberString(6) + "@gmail.com",
-		Phone:     utils.RandomNumberString(10),
+		Email: utils.RandomNumberString(6) + "@gmail.com",
+		Phone: pgtype.Text{
+			String: utils.RandomNumberString(10),
+			Valid:  true,
+		},
 		Password:  utils.RandomAlphabetString(6),
 		FirstName: utils.RandomUserName(),
 		LastName:  utils.RandomUserName(),
@@ -128,10 +132,13 @@ func TestQueries_ListUsers(t *testing.T) {
 func TestQueries_UpdateUser(t *testing.T) {
 	user1 := createRandomUser(t)
 	arg := UpdateUserParams{
-		Pk:        user1.Pk,
-		Password:  utils.RandomAlphabetString(6),
-		Email:     utils.RandomNumberString(6) + "@gmail.com",
-		Phone:     utils.RandomNumberString(10),
+		Pk:       user1.Pk,
+		Password: utils.RandomAlphabetString(6),
+		Email:    utils.RandomNumberString(6) + "@gmail.com",
+		Phone: pgtype.Text{
+			String: utils.RandomNumberString(10),
+			Valid:  true,
+		},
 		FirstName: utils.RandomUserName(),
 		LastName:  utils.RandomUserName(),
 		Language:  LanguageCode(utils.RandomLanguage()),

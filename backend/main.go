@@ -43,7 +43,9 @@ func main() {
 	// load environment variables
 	config, err := utils.LoadConfig(".")
 	if err != nil {
-		log.Fatalf("cannot load config: %v", err)
+		fmt.Printf("cannot load config: %v", err)
+		fmt.Println("Using default environment variables")
+		config = utils.LoadConfigFromEnv()
 	}
 
 	// set up database

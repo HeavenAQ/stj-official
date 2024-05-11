@@ -49,7 +49,7 @@ CREATE TABLE "users" (
     "pk" bigserial PRIMARY KEY,
     "id" uuid DEFAULT uuid_generate_v4 (),
     "email" text UNIQUE NOT NULL DEFAULT '',
-    "phone" text UNIQUE NOT NULL DEFAULT '',
+    "phone" text UNIQUE,
     "password" text NOT NULL DEFAULT '',
     "first_name" text NOT NULL DEFAULT '',
     "last_name" text NOT NULL DEFAULT '',

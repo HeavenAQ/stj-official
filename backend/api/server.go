@@ -44,7 +44,8 @@ func NewServer(store *db.Store, config utils.Config) (*Server, error) {
 	// setup token maker
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSyemmetricKey)
 	if err != nil {
-		log.Fatal("cannot create token maker")
+		log.Println("cannot create token maker")
+		log.Println(err)
 		return nil, err
 	}
 

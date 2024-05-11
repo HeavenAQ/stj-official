@@ -1,6 +1,6 @@
 import React from "react";
 import emailjs from "@emailjs/browser";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import SakeOrderCards from "./SakeOrderCards";

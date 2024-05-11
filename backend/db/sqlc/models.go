@@ -193,7 +193,7 @@ type User struct {
 	Pk        int64              `json:"pk"`
 	ID        pgtype.UUID        `json:"id"`
 	Email     string             `json:"email"`
-	Phone     string             `json:"phone"`
+	Phone     pgtype.Text        `json:"phone"`
 	Password  string             `json:"password"`
 	FirstName string             `json:"first_name"`
 	LastName  string             `json:"last_name"`

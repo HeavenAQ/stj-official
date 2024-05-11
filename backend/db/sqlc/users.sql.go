@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -19,7 +21,7 @@ RETURNING
 
 type CreateUserParams struct {
 	Email     string       `json:"email"`
-	Phone     string       `json:"phone"`
+	Phone     pgtype.Text  `json:"phone"`
 	Password  string       `json:"password"`
 	FirstName string       `json:"first_name"`
 	LastName  string       `json:"last_name"`
@@ -124,6 +126,35 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
+const getUserById = `-- name: GetUserById :one
+SELECT
+    pk, id, email, phone, password, first_name, last_name, language, address, last_login, created_at, updated_at
+FROM
+    users
+WHERE
+    id = $1
+`
+
+func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error) {
+	row := q.db.QueryRow(ctx, getUserById, id)
+	var i User
+	err := row.Scan(
+		&i.Pk,
+		&i.ID,
+		&i.Email,
+		&i.Phone,
+		&i.Password,
+		&i.FirstName,
+		&i.LastName,
+		&i.Language,
+		&i.Address,
+		&i.LastLogin,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getUserByPhone = `-- name: GetUserByPhone :one
 SELECT
     pk, id, email, phone, password, first_name, last_name, language, address, last_login, created_at, updated_at
@@ -133,7 +164,7 @@ WHERE
     phone = $1
 `
 
-func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (User, error) {
+func (q *Queries) GetUserByPhone(ctx context.Context, phone pgtype.Text) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByPhone, phone)
 	var i User
 	err := row.Scan(
@@ -220,7 +251,7 @@ RETURNING
 type UpdateUserParams struct {
 	Pk        int64        `json:"pk"`
 	Email     string       `json:"email"`
-	Phone     string       `json:"phone"`
+	Phone     pgtype.Text  `json:"phone"`
 	Password  string       `json:"password"`
 	FirstName string       `json:"first_name"`
 	LastName  string       `json:"last_name"`

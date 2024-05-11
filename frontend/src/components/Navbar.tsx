@@ -11,7 +11,11 @@ export default function Navbar() {
         <HiBars3BottomLeft className="text-3xl text-zinc-900" />
         <HiOutlineUserCircle className="text-3xl cursor-pointer text-zinc-900" />
       </div>
-      <img className="mx-auto h-full" src="/images/misc/logo.svg" alt="logo" />
+      <img
+        className="pr-8 mx-auto h-full"
+        src="/images/misc/logo.svg"
+        alt="logo"
+      />
 
       <HiOutlineShoppingCart className="text-3xl font-thin text-zinc-900" />
     </div>
