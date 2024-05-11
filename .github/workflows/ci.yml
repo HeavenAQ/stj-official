@@ -1,0 +1,68 @@
+name: ci-test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    # Service container: Postgres
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+
+        # check database setup
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ^1.22.1
+        id: go
+
+      - name: Check out go in the go module directory
+        uses: actions/checkout@v4
+
+      - name: Install golang migrate
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate /usr/bin/
+          which migrate
+
+      - name: Migrate database
+        env:
+          DB_MIGRATION_DIR: ${{ secrets.DB_MIGRATION_DIR }}
+          DB_MIGRATION_NAME: ${{ secrets.DB_MIGRATION_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_SSL_MODE: ${{ secrets.DB_SSL_MODE }}
+        run: cd backend && make migrate_up
+
+      - name: Start CI Test
+        env:
+          DB_DRIVER: ${{ secrets.DB_DRIVER }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_SSL_MODE: ${{ secrets.DB_SSL_MODE }}
+        run: cd backend && go test -v -cover ./...

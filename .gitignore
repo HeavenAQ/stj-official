@@ -53,4 +53,5 @@ frontend/.idea/
 
 # backend
 backend/db-data
+backend/.env
 cover.cov
