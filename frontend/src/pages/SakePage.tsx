@@ -1,56 +1,11 @@
-<<<<<<< HEAD
 import { FC, useEffect, useState } from "react";
-import { sakes, SakeInfo, SakeDescription } from "./data/sakes";
+import { sakes, SakeInfo, SakeDescription } from "../data/sakes";
 import Markdown from "react-markdown";
-=======
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Page404 from "./pages/404";
-import Sake from "./pages/SakePage";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import { Toaster } from "react-hot-toast";
-import Footer from "./components/Footer";
-import Navbar from "./components/Navbar";
->>>>>>> 37e8203d ([Add] Simple layout and components including login form, register form, navbar, and footer)
+import ContactUs from "../components/ContactUs";
 
-export default function App() {
-  return (
-    <BrowserRouter>
-      <Toaster
-        position="top-right"
-        gutter={12}
-        containerStyle={{ margin: "8px" }}
-        toastOptions={{
-          success: {
-            duration: 3000,
-          },
-          error: {
-            duration: 5000,
-          },
-          style: {
-            fontSize: "16px",
-            maxWidth: "500px",
-            padding: "16px 24px",
-            backgroundColor: "#333",
-            color: "#fff",
-          },
-        }}
-      />
-      <Navbar />
-      <Routes>
-        <Route index element={<Home />} />
-        <Route path="items" element={<Sake />} />
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-        <Route path="*" element={<Page404 />} />
-      </Routes>
-      <Footer />
-    </BrowserRouter>
-  );
+interface SakeDescriptionProps {
+  description: SakeDescription;
 }
-<<<<<<< HEAD
 const SakeDescriptionTabs: FC<SakeDescriptionProps> = ({ description }) => {
   const [activeTab, setActiveTab] = useState(0);
   const activeTabStyle = () => {
@@ -138,12 +93,9 @@ const SakeDescriptionTabs: FC<SakeDescriptionProps> = ({ description }) => {
 };
 
 interface SakeCardProps {
-  id: number;
   sake: SakeInfo;
 }
-const SakeCard: FC<SakeCardProps> = ({ id, sake }) => {
-  const isImgLeft = id % 2 === 0;
-
+const SakeCard: FC<SakeCardProps> = ({ sake }) => {
   useEffect(() => {
     const hash = window.location.hash;
     if (hash) {
@@ -155,14 +107,9 @@ const SakeCard: FC<SakeCardProps> = ({ id, sake }) => {
 
   return (
     <div id={sake.id}>
-      <div className="gap-8 sm:gap-10 lg:inline-grid lg:grid-cols-2">
-        {isImgLeft && (
-          <div className="hidden list-disc lg:grid">
-            <SakeDescriptionTabs description={sake.description} />
-          </div>
-        )}
-        <div className="flex flex-col h-full">
-          <div className="relative mx-auto w-full h-full text-center">
+      <div className="gap-8 sm:gap-10">
+        <div className="grid grid-rows-2 h-full">
+          <div className="mx-auto h-auto text-center max-w-96">
             <img
               className="object-cover w-full h-full rounded-lg"
               width="100%"
@@ -170,42 +117,41 @@ const SakeCard: FC<SakeCardProps> = ({ id, sake }) => {
               src={sake.images[0]}
               alt="service"
             />
-            <h2 className="hidden text-lg font-medium lg:inline-block font-m-plus tracking-[10px]">
+            <h2 className="hidden text-lg font-medium font-m-plus tracking-[10px]">
               {sake.subtitle}
             </h2>
           </div>
-          <div className="grid mt-6 list-disc lg:hidden">
+          <div className="grid mt-6 list-disc">
             <SakeDescriptionTabs description={sake.description} />
           </div>
         </div>
-        {!isImgLeft && (
-          <div className="hidden list-disc lg:grid">
-            <SakeDescriptionTabs description={sake.description} />
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
 const Sake: FC = () => {
-  const servicesInfo = sakes.getSakeInfoList();
+  const sakeInfo = sakes.getSakeInfoList();
 
   return (
-    <div className="overflow-scroll px-8 mx-auto w-full md:px-14 h-[100vh] snap-y snap-mandatory scroll-smooth">
-      {servicesInfo.map((sake, i) => (
+    <div className="px-4 mx-auto w-full sm:px-8 md:overflow-scroll md:px-14 max-w-[1000px] md:h-[100vh] md:snap-y md:snap-mandatory md:scroll-smooth">
+      {sakeInfo.map((sake) => (
         <div
           key={sake.title}
           id={sake.title}
-          className="flex justify-center pt-8 pb-16 lg:items-center lg:pt-0 lg:pb-0 h-[100vh] snap-start"
+          className="pt-8 pb-16 lg:items-center lg:pt-20 lg:pb-0 md:h-[100vh] md:snap-start"
         >
-          <SakeCard id={i} sake={sake} />
+          <SakeCard sake={sake} />
         </div>
       ))}
+      <div
+        id="contact_us"
+        className="pt-8 pb-16 rounded-lg lg:items-center lg:pt-20 lg:pb-0 md:h-[100vh] md:snap-start"
+      >
+        <ContactUs />
+      </div>
     </div>
   );
 };
 
 export default Sake;
-=======
->>>>>>> 37e8203d ([Add] Simple layout and components including login form, register form, navbar, and footer)
