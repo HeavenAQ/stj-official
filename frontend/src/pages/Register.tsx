@@ -70,6 +70,7 @@ export default function Register() {
           <input
             placeholder="電子信箱"
             type="email"
+            value={email}
             className="py-2 px-4 rounded-xl"
             onChange={(ev) => setEmail(ev.target.value)}
             autoComplete="email"

@@ -38,7 +38,7 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 	}
 
 	// check if the password is correct
-	err = utils.CheckPassword(req.Password, user.Password)
+	err = utils.CheckPassword(user.Password, req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return

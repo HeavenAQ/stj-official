@@ -32,7 +32,7 @@ func (server *Server) setupV1UsersRoutes(v1 *gin.RouterGroup) {
 func (server *Server) setupV1AuthRoutes(v1 *gin.RouterGroup) {
 	auth := v1.Group("/auth")
 	auth.POST("/register", server.UserRegister)
-	auth.GET("/login", server.UserLogin)
+	auth.POST("/login", server.UserLogin)
 	//auth.GET("/logout", server.Logout)
 	//auth.POST("/password-reset", server.PasswordReset)
 }

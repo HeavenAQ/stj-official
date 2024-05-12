@@ -1,15 +1,77 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { AxiosError, HttpStatusCode } from "axios";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../api/user";
+import Loading from "../components/Loading";
+
+interface LoginParams {
+  email: string;
+  password: string;
+}
+
+const useLoginMutation = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationKey: ["login"],
+    mutationFn: async ({ email, password }: LoginParams) =>
+      loginUser(email, password),
+    onSuccess: (data) => {
+      toast.success("登入成功");
+      queryClient.setQueryData(["user"], data);
+      navigate("/");
+    },
+    onError: (error) => {
+      const err = error as AxiosError;
+      if (err.response?.status === HttpStatusCode.Unauthorized) {
+        toast.error("電子信箱或密碼錯誤");
+      } else {
+        toast.error("登入失敗，請再試一次");
+      }
+      console.error(error);
+    },
+  });
+
+  return mutation;
+};
 
 export default function Login() {
   const navigate = useNavigate();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [rememberMe, setRememberMe] = useState<boolean>(false);
+  const mutation = useLoginMutation();
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      return;
+    } else if (password.length < 8) {
+      toast.error("密碼長度不足");
+    }
+    mutation.mutate({ email, password });
+  };
+
   return (
     <div className="max-h-[700px] w-[90%] sm:w-[80%] md:w-[70%] max-w-[500px] h-[60%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-zinc-600 flex flex-col px-10 shadow-xl shadow-gray-500 justify-center animate-fade">
       <h1 className="mb-3 text-3xl text-center text-white">會員登入</h1>
-      <form>
+      {mutation.isPending && (
+        <div className="flex justify-center items-center mx-auto mt-20 w-32 h-32">
+          <Loading />
+        </div>
+      )}
+      <form
+        onSubmit={onSubmit}
+        className={`${mutation.isPending ? "hidden" : ""}`}
+      >
         <div className="flex flex-col mt-5">
           <input
             placeholder="電子信箱"
             type="email"
+            value={email}
+            onChange={(ev) => setEmail(ev.target.value)}
             className="py-2 px-4 rounded-xl"
             autoComplete="email"
           />
@@ -17,13 +79,19 @@ export default function Login() {
         <div className="flex flex-col mt-5">
           <input
             placeholder="密碼"
+            value={password}
+            onChange={(ev) => setPassword(ev.target.value)}
             type="password"
             className="py-2 px-4 rounded-xl"
             autoComplete="current-password"
           />
         </div>
         <div className="inline-flex justify-start items-center mt-2 w-full">
-          <input type="checkbox" className="m-2 cursor-pointer" />
+          <input
+            type="checkbox"
+            className="m-2 cursor-pointer"
+            onClick={() => setRememberMe(!rememberMe)}
+          />
           <label className="text-white">記住我</label>
           <a
             href="/password-reset"
