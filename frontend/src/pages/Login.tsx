@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 export default function Login() {
+  const navigate = useNavigate();
   return (
     <div className="max-h-[700px] w-[90%] sm:w-[80%] md:w-[70%] max-w-[500px] h-[60%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-zinc-600 flex flex-col px-10 shadow-xl shadow-gray-500 justify-center animate-fade">
       <h1 className="mb-3 text-3xl text-center text-white">會員登入</h1>
@@ -41,7 +44,13 @@ export default function Login() {
             or
           </span>
         </div>
-        <button className="p-2 w-full text-white rounded-xl duration-300 bg-zinc-900 hover:bg-zinc-500 active:bg-zinc-400">
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            navigate("/register");
+          }}
+          className="p-2 w-full text-white rounded-xl duration-300 bg-zinc-900 hover:bg-zinc-500 active:bg-zinc-400"
+        >
           註冊
         </button>
       </form>
