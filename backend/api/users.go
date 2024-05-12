@@ -30,6 +30,19 @@ type UserInfoResponse struct {
 	Address   string          `json:"address"`
 }
 
+// Convert DB user to response to exclude sensitive information
+func (server *Server) userResponse(user db.User) UserInfoResponse {
+	return UserInfoResponse{
+		ID:        user.ID,
+		Email:     user.Email,
+		Phone:     user.Phone.String,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Language:  user.Language,
+		Address:   user.Address,
+	}
+}
+
 func (server *Server) CreateUser(ctx *gin.Context) {
 	var req CreateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -37,15 +50,14 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	// create args for creating user
-	password, err := utils.B64Decode(req.Password)
-	password, err = utils.HashPassword(password)
+	// decode password and hash it
+	password, err := utils.DecodeAndHashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// create user in database
+	// create args for creating user
 	args := db.CreateUserParams{
 		Email:     req.Email,
 		Phone:     req.Phone,
@@ -55,9 +67,11 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 		Language:  req.Language,
 		Address:   req.Address,
 	}
+
+	// create user in database
 	user, err := server.store.CreateUser(ctx, args)
 	if err != nil {
-		if strings.Contains(err.Error(), "duplicate key value") {
+		if strings.Contains(err.Error(), "users_email_key") {
 			ctx.JSON(http.StatusConflict, gin.H{"error": "email already exists"})
 		} else {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -66,13 +80,5 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 	}
 
 	// return user
-	ctx.JSON(http.StatusOK, UserInfoResponse{
-		ID:        user.ID,
-		Email:     user.Email,
-		Phone:     user.Phone.String,
-		FirstName: user.FirstName,
-		LastName:  user.LastName,
-		Language:  user.Language,
-		Address:   user.Address,
-	})
+	ctx.JSON(http.StatusOK, server.userResponse(user))
 }
