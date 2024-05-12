@@ -8,9 +8,16 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func Test_b64Decode(t *testing.T) {
+func Test_B64Encode(t *testing.T) {
+	input := "hello world"
+	expectedOutput := base64.StdEncoding.EncodeToString([]byte(input))
+	encodedString := B64Encode(input)
+	require.Equal(t, expectedOutput, encodedString)
+}
+
+func Test_B64Decode(t *testing.T) {
 	// valid base64 string
-	validInput := base64.StdEncoding.EncodeToString([]byte("hello world"))
+	validInput := B64Encode("hello world")
 	expectedOutput := "hello world"
 	decodedString, err := B64Decode(validInput)
 	require.NoError(t, err)
@@ -36,11 +43,12 @@ func Test_CheckPassword(t *testing.T) {
 	password := "securePassword"
 	hashedPassword, _ := HashPassword(password)
 
+	// password is encoded with base64 to simulate the password coming from the client
 	// Check with the correct password
-	err := CheckPassword(hashedPassword, password)
+	err := CheckPassword(hashedPassword, B64Encode(password))
 	require.NoError(t, err)
 
 	// Check with the incorrect password
-	err = CheckPassword(hashedPassword, "wrongPassword")
+	err = CheckPassword(hashedPassword, B64Encode("wrongPassword"))
 	require.Error(t, err)
 }

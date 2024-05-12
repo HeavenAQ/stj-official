@@ -1,6 +1,8 @@
 package api
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 func (server *Server) setupRouter() {
 	api := server.router.Group("/api")
@@ -17,13 +19,13 @@ func (server *Server) setupV1Routes(api *gin.RouterGroup) {
 
 func (server *Server) setupV1ProductsRoutes(v1 *gin.RouterGroup) {
 
-	products := v1.Group("/products")
+	products := v1.Group("/products").Use(authMiddleware(server.tokenMaker))
 	products.GET("", server.ListProducts)
 	products.DELETE("/:id", server.DeleteProduct)
 }
 
 func (server *Server) setupV1UsersRoutes(v1 *gin.RouterGroup) {
-	//product := v1.Group("/users")
+	//product := v1.Group("/users").Use(authMiddleware(server.TokenMaker))
 	//product.GET("/:id", server.GetUser)
 	//product.DELETE("/:id", server.DeleteUser)
 	//product.PUT("/:id", server.UpdateUser)

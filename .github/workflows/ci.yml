@@ -65,4 +65,6 @@ jobs:
           DB_PORT: ${{ secrets.DB_PORT }}
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_SSL_MODE: ${{ secrets.DB_SSL_MODE }}
+          TOKEN_SYMMETRIC_KEY: ${{ secrets.TOKEN_SYMMETRIC_KEY }}
+          TOKEN_DURATION: ${{ secrets.TOKEN_DURATION }}
         run: cd backend && go test -v -cover ./...

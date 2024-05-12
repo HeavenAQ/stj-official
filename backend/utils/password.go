@@ -7,6 +7,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// for encoding
+func B64Encode(s string) string {
+	return base64.StdEncoding.EncodeToString([]byte(s))
+}
+
 // for decoding the password coming from the client
 func B64Decode(s string) (string, error) {
 	b, err := base64.StdEncoding.DecodeString(s)
