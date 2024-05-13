@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // ensure that the secret key is at least 32 characters long
@@ -22,8 +23,8 @@ func NewJWTMaker(secretKey string) (Maker, error) {
 }
 
 // create a new token for a specific username and duration
-func (maker JWTMaker) CreateToken(userEmail string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(userEmail, duration)
+func (maker JWTMaker) CreateToken(userID pgtype.UUID, duration time.Duration) (string, error) {
+	payload, err := NewPayload(userID, duration)
 	if err != nil {
 		return "", err
 	}

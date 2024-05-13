@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,13 +17,16 @@ func TestPasetoMaker(t *testing.T) {
 	require.NoError(t, err)
 
 	// payload information
-	userEmail := utils.RandomAlphabetString(6) + "@gmail.com"
+	userID := pgtype.UUID{
+		Bytes: uuid.New(),
+		Valid: true,
+	}
 	duration := time.Minute
 	issuedAt := time.Now()
 	expiredAt := issuedAt.Add(duration)
 
 	// Create a token
-	token, err := maker.CreateToken(userEmail, duration)
+	token, err := maker.CreateToken(userID, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
 
@@ -31,7 +36,7 @@ func TestPasetoMaker(t *testing.T) {
 	require.NotEmpty(t, payload)
 
 	require.NotZero(t, payload.ID)
-	require.Equal(t, userEmail, payload.UserEmail)
+	require.Equal(t, userID, payload.UserID)
 	require.WithinDuration(t, issuedAt, payload.IssuedAt.Time, time.Second)
 	require.WithinDuration(t, expiredAt, payload.ExpiresAt.Time, time.Second)
 }
@@ -42,7 +47,11 @@ func TestExpiredPasetoToken(t *testing.T) {
 	require.NoError(t, err)
 
 	// create a token with a duration of -1
-	token, err := maker.CreateToken(utils.RandomAlphabetString(6)+"@gmail.com", -time.Minute)
+	userID := pgtype.UUID{
+		Bytes: uuid.New(),
+		Valid: true,
+	}
+	token, err := maker.CreateToken(userID, -time.Minute)
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
 

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"os"
 	"time"
 
 	"github.com/spf13/viper"
@@ -32,6 +33,7 @@ func LoadConfig(path string) (config Config, err error) {
 	}
 
 	err = viper.Unmarshal(&config)
+	os.Setenv("PORT", config.Port)
 	return
 }
 

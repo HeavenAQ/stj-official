@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	db "stj-ecommerce/db/sqlc"
+	"stj-ecommerce/token"
 	"stj-ecommerce/utils"
 	"strings"
 
@@ -80,5 +81,15 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 	}
 
 	// return user
+	ctx.JSON(http.StatusOK, server.userResponse(user))
+}
+
+func (server *Server) GetUser(ctx *gin.Context) {
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+	user, err := server.store.GetUserById(ctx, authPayload.UserID)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
 	ctx.JSON(http.StatusOK, server.userResponse(user))
 }
