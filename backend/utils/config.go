@@ -16,7 +16,7 @@ type Config struct {
 	DBUser              string        `mapstructure:"DB_USER"`
 	DBSSLMode           string        `mapstructure:"DB_SSL_MODE"`
 	TokenSyemmetricKey  string        `mapstructure:"TOKEN_SYMMETRIC_KEY"`
-	AccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
+	AccessTokenDuration time.Duration `mapstructure:"TOKEN_DURATION"`
 	Port                string        `mapstructure:"PORT"`
 }
 
@@ -48,7 +48,7 @@ func LoadConfigFromEnv() (config Config) {
 		DBUser:              viper.GetString("DB_USER"),
 		DBSSLMode:           viper.GetString("DB_SSL_MODE"),
 		TokenSyemmetricKey:  viper.GetString("TOKEN_SYMMETRIC_KEY"),
-		AccessTokenDuration: viper.GetDuration("ACCESS_TOKEN_DURATION"),
+		AccessTokenDuration: viper.GetDuration("TOKEN_DURATION"),
 		Port:                viper.GetString("PORT"),
 	}
 	return

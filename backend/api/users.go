@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	db "stj-ecommerce/db/sqlc"
 	"stj-ecommerce/token"
@@ -85,6 +86,7 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 }
 
 func (server *Server) GetUser(ctx *gin.Context) {
+	fmt.Println("GetUser")
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	user, err := server.store.GetUserById(ctx, authPayload.UserID)
 	if err != nil {

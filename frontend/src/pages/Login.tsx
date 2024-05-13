@@ -18,9 +18,10 @@ const useLoginMutation = () => {
     mutationKey: ["login"],
     mutationFn: async ({ email, password }: LoginParams) =>
       loginUser(email, password),
-    onSuccess: (data) => {
+    onSuccess: (res) => {
       toast.success("登入成功");
-      queryClient.setQueryData(["user"], data);
+      queryClient.setQueryData(["user"], () => ({ data: res.data.user }));
+      sessionStorage.setItem("access_token", res.data.access_token);
       navigate("/");
     },
     onError: (error) => {
@@ -44,13 +45,18 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const mutation = useLoginMutation();
 
+  // on submit login
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // ensure email and password are valid
     if (!email || !password) {
       return;
     } else if (password.length < 8) {
       toast.error("密碼長度不足");
     }
+
+    // call login mutation
     mutation.mutate({ email, password });
   };
 

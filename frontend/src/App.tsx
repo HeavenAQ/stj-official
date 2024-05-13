@@ -9,6 +9,7 @@ import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import PasswordReset from "./pages/PasswordReset";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import User from "./pages/User";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="password-reset" element={<PasswordReset />} />
+          <Route path="user" element={<User />} />
           <Route path="*" element={<Page404 />} />
         </Routes>
         <Footer />

@@ -102,6 +102,7 @@ func Test_AuthMiddleware(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			server, err := NewServer("../")
 			require.NoError(t, err)
+			defer server.Shutdown()
 
 			authMiddleware := authMiddleware(server.tokenMaker)
 

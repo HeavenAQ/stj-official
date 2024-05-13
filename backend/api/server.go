@@ -35,15 +35,6 @@ func (server *Server) healthCheck(ctx *gin.Context) {
 	}
 }
 
-func corsConfig() cors.Config {
-	corsConf := cors.DefaultConfig()
-	corsConf.AllowAllOrigins = true
-	corsConf.AllowMethods = []string{"GET", "POST", "DELETE", "OPTIONS", "PUT"}
-	corsConf.AllowHeaders = []string{"Authorization", "Content-Type", "Upgrade", "Origin",
-		"Connection", "Accept-Encoding", "Accept-Language", "Host", "Access-Control-Request-Method", "Access-Control-Request-Headers"}
-	return corsConf
-}
-
 func setupServer(store *db.Store, config utils.Config) (*Server, error) {
 	// setup token maker
 	tokenMaker, err := token.NewPasetoMaker(config.TokenSyemmetricKey)
@@ -56,8 +47,12 @@ func setupServer(store *db.Store, config utils.Config) (*Server, error) {
 	// config server
 	server := &Server{store: store, config: config, tokenMaker: tokenMaker}
 	server.router = gin.Default()
-	server.router.Use(cors.Default())
-	server.router.Use(cors.New(corsConfig()))
+	server.router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}))
 	server.setupRouter()
 	return server, nil
 }
@@ -100,7 +95,6 @@ func NewServer(configPath string) (*Server, error) {
 
 	// set up database
 	store := setupDatabaseStore(config)
-	defer store.Close()
 
 	// set up server
 	server, err := setupServer(store, config)
@@ -109,4 +103,8 @@ func NewServer(configPath string) (*Server, error) {
 		return nil, err
 	}
 	return server, err
+}
+
+func (server *Server) Shutdown() {
+	server.store.Close()
 }

@@ -7,6 +7,7 @@ import (
 
 func main() {
 	server, err := api.NewServer(".")
+	defer server.Shutdown()
 	if err != nil {
 		log.Fatalf("cannot create server: %v", err)
 	}
