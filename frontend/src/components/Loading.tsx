@@ -18,5 +18,5 @@ const Loading = () => (
     </svg>
     <span className="sr-only">Loading...</span>
   </>
-);
-export default Loading;
+)
+export default Loading

@@ -1,16 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "node_modules/flowbite-react/lib/esm/**/*.js",
+    './src/**/*.{js,jsx,ts,tsx}',
+    'node_modules/flowbite-react/lib/esm/**/*.js'
   ],
   theme: {
-    extend: {},
+    extend: {}
   },
   plugins: [
-    require("flowbite/plugin")({
-      forms: false,
+    require('flowbite/plugin')({
+      forms: false
     }),
-    require("tailwindcss-animated"),
-  ],
-};
+    require('tailwindcss-animated')
+  ]
+}

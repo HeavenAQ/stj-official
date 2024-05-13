@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 export default function Footer() {
   return (
@@ -9,5 +9,5 @@ export default function Footer() {
         className="md:h-10 lg:h-14 xl:h-16"
       />
     </div>
-  );
+  )
 }

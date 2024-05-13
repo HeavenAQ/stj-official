@@ -1,64 +1,64 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AxiosError, HttpStatusCode } from "axios";
-import { useState } from "react";
-import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { loginUser } from "../api/user";
-import Loading from "../components/Loading";
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { AxiosError, HttpStatusCode } from 'axios'
+import { useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
+import { loginUser } from '../api/user'
+import Loading from '../components/Loading'
 
 interface LoginParams {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 const useLoginMutation = () => {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const mutation = useMutation({
-    mutationKey: ["login"],
+    mutationKey: ['login'],
     mutationFn: async ({ email, password }: LoginParams) =>
       loginUser(email, password),
-    onSuccess: (res) => {
-      toast.success("登入成功");
-      queryClient.setQueryData(["user"], () => ({ data: res.data.user }));
-      sessionStorage.setItem("access_token", res.data.access_token);
-      navigate("/");
+    onSuccess: res => {
+      toast.success('登入成功')
+      queryClient.setQueryData(['user'], () => ({ data: res.data.user }))
+      sessionStorage.setItem('access_token', res.data.access_token)
+      navigate('/')
     },
-    onError: (error) => {
-      const err = error as AxiosError;
+    onError: error => {
+      const err = error as AxiosError
       if (err.response?.status === HttpStatusCode.Unauthorized) {
-        toast.error("電子信箱或密碼錯誤");
+        toast.error('電子信箱或密碼錯誤')
       } else {
-        toast.error("登入失敗，請再試一次");
+        toast.error('登入失敗，請再試一次')
       }
-      console.error(error);
-    },
-  });
+      console.error(error)
+    }
+  })
 
-  return mutation;
-};
+  return mutation
+}
 
 export default function Login() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
-  const mutation = useLoginMutation();
+  const navigate = useNavigate()
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [rememberMe, setRememberMe] = useState<boolean>(false)
+  const mutation = useLoginMutation()
 
   // on submit login
   const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // ensure email and password are valid
     if (!email || !password) {
-      return;
+      return
     } else if (password.length < 8) {
-      toast.error("密碼長度不足");
+      toast.error('密碼長度不足')
     }
 
     // call login mutation
-    mutation.mutate({ email, password });
-  };
+    mutation.mutate({ email, password })
+  }
 
   return (
     <div className="max-h-[700px] w-[90%] sm:w-[80%] md:w-[70%] max-w-[500px] h-[60%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-zinc-600 flex flex-col px-10 shadow-xl shadow-gray-500 justify-center animate-fade">
@@ -70,14 +70,14 @@ export default function Login() {
       )}
       <form
         onSubmit={onSubmit}
-        className={`${mutation.isPending ? "hidden" : ""}`}
+        className={`${mutation.isPending ? 'hidden' : ''}`}
       >
         <div className="flex flex-col mt-5">
           <input
             placeholder="電子信箱"
             type="email"
             value={email}
-            onChange={(ev) => setEmail(ev.target.value)}
+            onChange={ev => setEmail(ev.target.value)}
             className="py-2 px-4 rounded-xl"
             autoComplete="email"
           />
@@ -86,7 +86,7 @@ export default function Login() {
           <input
             placeholder="密碼"
             value={password}
-            onChange={(ev) => setPassword(ev.target.value)}
+            onChange={ev => setPassword(ev.target.value)}
             type="password"
             className="py-2 px-4 rounded-xl"
             autoComplete="current-password"
@@ -119,9 +119,9 @@ export default function Login() {
           </span>
         </div>
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            navigate("/register");
+          onClick={e => {
+            e.preventDefault()
+            navigate('/register')
           }}
           className="p-2 w-full text-white rounded-xl duration-300 bg-zinc-900 hover:bg-zinc-500 active:bg-zinc-400"
         >
@@ -129,5 +129,5 @@ export default function Login() {
         </button>
       </form>
     </div>
-  );
+  )
 }

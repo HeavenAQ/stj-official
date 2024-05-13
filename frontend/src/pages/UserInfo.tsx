@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 export const UserInfo = () => {
   return (
@@ -7,5 +7,5 @@ export const UserInfo = () => {
         <h1>UserInfo</h1>
       </div>
     </div>
-  );
-};
+  )
+}

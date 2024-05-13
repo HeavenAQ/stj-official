@@ -1,58 +1,58 @@
-import { HttpStatusCode } from "axios";
-import { useState } from "react";
-import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { registerUser } from "../api/user";
-import Loading from "../components/Loading";
+import { HttpStatusCode } from 'axios'
+import { useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
+import { registerUser } from '../api/user'
+import Loading from '../components/Loading'
 
 export default function Register() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const navigate = useNavigate()
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [confirmPassword, setConfirmPassword] = useState<string>('')
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const isInvalidPassword = (condition: boolean, message: string) => {
     if (condition) {
-      toast.error(message);
-      setPassword("");
-      setConfirmPassword("");
-      setIsLoading(false);
-      return true;
+      toast.error(message)
+      setPassword('')
+      setConfirmPassword('')
+      setIsLoading(false)
+      return true
     }
-    return false;
-  };
+    return false
+  }
 
   const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
+    e.preventDefault()
+    setIsLoading(true)
 
     // check if password and confirm password match
-    const chk1 = isInvalidPassword(password !== confirmPassword, "密碼不相符");
-    const chk2 = isInvalidPassword(password.length < 8, "密碼長度不足");
-    if (chk1 || chk2) return;
+    const chk1 = isInvalidPassword(password !== confirmPassword, '密碼不相符')
+    const chk2 = isInvalidPassword(password.length < 8, '密碼長度不足')
+    if (chk1 || chk2) return
 
     // create user and show toast message
     registerUser(email, password)
-      .then((res) => {
+      .then(res => {
         switch (res.status) {
           case HttpStatusCode.Ok:
-            toast.success("註冊成功");
-            break;
+            toast.success('註冊成功')
+            break
           default:
-            toast.error("註冊失敗，請再試一次");
+            toast.error('註冊失敗，請再試一次')
         }
         // succeeded, redirect to login page
-        setIsLoading(false);
-        navigate("/login");
+        setIsLoading(false)
+        navigate('/login')
       })
-      .catch((err) => {
+      .catch(err => {
         err.response?.status === HttpStatusCode.Conflict
-          ? toast.error("此電子信箱已被註冊")
-          : toast.error("註冊失敗，請再試一次");
-        setIsLoading(false);
-      });
-  };
+          ? toast.error('此電子信箱已被註冊')
+          : toast.error('註冊失敗，請再試一次')
+        setIsLoading(false)
+      })
+  }
 
   return (
     <div className="w-[90%] sm:w-[80%] md:w-[70%] max-w-[500px] max-h-[700px] h-[60%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-zinc-600 flex flex-col px-10 shadow-xl shadow-gray-500 justify-center animate-fade">
@@ -63,8 +63,8 @@ export default function Register() {
         </div>
       )}
       <form
-        className={`${isLoading ? "hidden" : ""}`}
-        onSubmit={(e) => onSubmit(e)}
+        className={`${isLoading ? 'hidden' : ''}`}
+        onSubmit={e => onSubmit(e)}
       >
         <div className="flex flex-col mt-5">
           <input
@@ -72,7 +72,7 @@ export default function Register() {
             type="email"
             value={email}
             className="py-2 px-4 rounded-xl"
-            onChange={(ev) => setEmail(ev.target.value)}
+            onChange={ev => setEmail(ev.target.value)}
             autoComplete="email"
             required
           />
@@ -83,7 +83,7 @@ export default function Register() {
             type="password"
             className="py-2 px-4 rounded-xl"
             value={password}
-            onChange={(ev) => setPassword(ev.target.value)}
+            onChange={ev => setPassword(ev.target.value)}
             autoComplete="new-password"
             required
           />
@@ -94,7 +94,7 @@ export default function Register() {
             type="password"
             className="py-2 px-4 rounded-xl"
             value={confirmPassword}
-            onChange={(ev) => setConfirmPassword(ev.target.value)}
+            onChange={ev => setConfirmPassword(ev.target.value)}
             autoComplete="new-password"
             required
           />
@@ -104,5 +104,5 @@ export default function Register() {
         </button>
       </form>
     </div>
-  );
+  )
 }

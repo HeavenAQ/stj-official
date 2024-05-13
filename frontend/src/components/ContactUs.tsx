@@ -1,57 +1,57 @@
-import React from "react";
-import emailjs from "@emailjs/browser";
-import toast from "react-hot-toast";
-import "react-phone-number-input/style.css";
-import PhoneInput from "react-phone-number-input";
-import SakeOrderCards from "./SakeOrderCards";
-import { sakes } from "../data/sakes";
-import { Order } from "../types";
-import { usePlacesWidget } from "react-google-autocomplete";
-import Loading from "./Loading";
+import React from 'react'
+import emailjs from '@emailjs/browser'
+import toast from 'react-hot-toast'
+import 'react-phone-number-input/style.css'
+import PhoneInput from 'react-phone-number-input'
+import SakeOrderCards from './SakeOrderCards'
+import { sakes } from '../data/sakes'
+import { Order } from '../types'
+import { usePlacesWidget } from 'react-google-autocomplete'
+import Loading from './Loading'
 
-const serviceID = process.env.REACT_APP_EMAILJS_SERVICE_ID;
-const templateID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
-const apiKey = process.env.REACT_APP_EMAILJS_API_KEY;
-const googleMapAPIKey = process.env.REACT_APP_GOOGLE_MAP_API_KEY;
+const serviceID = process.env.REACT_APP_EMAILJS_SERVICE_ID
+const templateID = process.env.REACT_APP_EMAILJS_TEMPLATE_ID
+const apiKey = process.env.REACT_APP_EMAILJS_API_KEY
+const googleMapAPIKey = process.env.REACT_APP_GOOGLE_MAP_API_KEY
 
 const initOrders = (sakes: string[]) => {
-  return sakes.map((sake) => {
+  return sakes.map(sake => {
     return {
       name: sake,
       quantity: 0,
-      note: "",
-    };
-  });
-};
+      note: ''
+    }
+  })
+}
 
 const ContactUs: React.FC = () => {
-  const [name, setName] = React.useState<string>("");
-  const [email, setEmail] = React.useState<string>("");
-  const [phone, setPhone] = React.useState<any>();
-  const [address, setAddress] = React.useState<string>("");
-  const [backupAddress, setBackupAddress] = React.useState<string>("");
-  const [spinner, setSpinner] = React.useState<boolean>(false);
+  const [name, setName] = React.useState<string>('')
+  const [email, setEmail] = React.useState<string>('')
+  const [phone, setPhone] = React.useState<any>()
+  const [address, setAddress] = React.useState<string>('')
+  const [backupAddress, setBackupAddress] = React.useState<string>('')
+  const [spinner, setSpinner] = React.useState<boolean>(false)
 
   // initialize the order list
-  const [orders, setOrders] = React.useState<Order[]>(initOrders(sakes.chn));
+  const [orders, setOrders] = React.useState<Order[]>(initOrders(sakes.chn))
 
   // setup google map API
   const { ref } = usePlacesWidget<HTMLInputElement>({
     apiKey: googleMapAPIKey,
-    onPlaceSelected: (place) => {
-      setAddress(place.formatted_address);
+    onPlaceSelected: place => {
+      setAddress(place.formatted_address)
     },
     options: {
-      types: ["(regions)"],
-      componentRestrictions: { country: "tw" },
-    },
-  });
+      types: ['(regions)'],
+      componentRestrictions: { country: 'tw' }
+    }
+  })
 
   // send email to the admin when form submitted
   const onSubmit = (ev: React.FormEvent) => {
-    ev.preventDefault();
-    setSpinner(true);
-    const finalAddress = address || backupAddress;
+    ev.preventDefault()
+    setSpinner(true)
+    const finalAddress = address || backupAddress
 
     // check if all fields are filled
     if (
@@ -60,12 +60,12 @@ const ContactUs: React.FC = () => {
         email &&
         phone &&
         finalAddress &&
-        orders.some((order) => order.quantity > 0)
+        orders.some(order => order.quantity > 0)
       )
     ) {
-      setSpinner(false);
-      toast.error("請輸入所有項目，並且確認物品數量不為0，謝謝！");
-      return;
+      setSpinner(false)
+      toast.error('請輸入所有項目，並且確認物品數量不為0，謝謝！')
+      return
     }
 
     // set email template parameters
@@ -75,38 +75,38 @@ const ContactUs: React.FC = () => {
       phone: phone,
       address: finalAddress,
       body: orders
-        .filter((order) => order.quantity > 0)
-        .map((order) => {
-          return `${order.name} x ${order.quantity} *備註：${order.note}`;
+        .filter(order => order.quantity > 0)
+        .map(order => {
+          return `${order.name} x ${order.quantity} *備註：${order.note}`
         })
-        .join("\n"),
-    };
+        .join('\n')
+    }
 
     // ensure the emailjs service ID, template ID, and API key are set
     if (!serviceID || !templateID || !apiKey) {
-      toast.error("送出失敗，請再試一次！");
-      console.log("EmailJS service ID, template ID, or API key is not set.");
-      setSpinner(false);
-      return;
+      toast.error('送出失敗，請再試一次！')
+      console.log('EmailJS service ID, template ID, or API key is not set.')
+      setSpinner(false)
+      return
     }
 
     // send email
     emailjs
       .send(serviceID, templateID, templateParams, apiKey)
-      .then((_) => {
-        setSpinner(false);
-        setName("");
-        setEmail("");
-        setPhone("");
-        setOrders(initOrders(sakes.chn));
-        toast.success("已成功送出！謝謝您的訂購！");
+      .then(_ => {
+        setSpinner(false)
+        setName('')
+        setEmail('')
+        setPhone('')
+        setOrders(initOrders(sakes.chn))
+        toast.success('已成功送出！謝謝您的訂購！')
       })
-      .catch((res) => {
-        setSpinner(false);
-        console.log("Failed to send email.", res);
-        toast.error("送出失敗，請再試一次！");
-      });
-  };
+      .catch(res => {
+        setSpinner(false)
+        console.log('Failed to send email.', res)
+        toast.error('送出失敗，請再試一次！')
+      })
+  }
 
   return (
     <section className="pt-8 w-full h-auto bg-gray-100 rounded-xl">
@@ -120,7 +120,7 @@ const ContactUs: React.FC = () => {
           </div>
         )}
         <form
-          className={`${spinner ? "hidden" : ""}  p-6 w-full rounded-xl`}
+          className={`${spinner ? 'hidden' : ''}  p-6 w-full rounded-xl`}
           onSubmit={onSubmit}
         >
           <div className="flex flex-wrap -mx-3 mb-6">
@@ -130,7 +130,7 @@ const ContactUs: React.FC = () => {
                 id="grid-first-name"
                 type="text"
                 placeholder="姓名"
-                onChange={(ev) => setName(ev.target.value)}
+                onChange={ev => setName(ev.target.value)}
                 value={name}
                 required
               />
@@ -141,7 +141,7 @@ const ContactUs: React.FC = () => {
                 id="email"
                 type="email"
                 placeholder="example@mail.com"
-                onChange={(ev) => setEmail(ev.target.value)}
+                onChange={ev => setEmail(ev.target.value)}
                 value={email}
                 required
               />
@@ -162,7 +162,7 @@ const ContactUs: React.FC = () => {
               className="block py-3 px-4 mb-3 w-full leading-tight bg-white rounded border appearance-none"
               placeholder="請輸入地址"
               type="text"
-              onChange={(ev) => setBackupAddress(ev.currentTarget.value)}
+              onChange={ev => setBackupAddress(ev.currentTarget.value)}
             />
           </div>
           <div className="flex flex-wrap -mx-3 mb-10">
@@ -188,7 +188,7 @@ const ContactUs: React.FC = () => {
         </form>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default ContactUs;
+export default ContactUs

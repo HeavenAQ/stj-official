@@ -1,34 +1,34 @@
-import { FC, useEffect, useState } from "react";
-import { sakes, SakeInfo, SakeDescription } from "../data/sakes";
-import Markdown from "react-markdown";
-import ContactUs from "../components/ContactUs";
+import { FC, useEffect, useState } from 'react'
+import { sakes, SakeInfo, SakeDescription } from '../data/sakes'
+import Markdown from 'react-markdown'
+import ContactUs from '../components/ContactUs'
 
 interface SakeDescriptionProps {
-  description: SakeDescription;
+  description: SakeDescription
 }
 const SakeDescriptionTabs: FC<SakeDescriptionProps> = ({ description }) => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(0)
   const activeTabStyle = () => {
     switch (activeTab) {
       case 0:
-        return "after:ml-0";
+        return 'after:ml-0'
       case 1:
-        return "after:ml-[calc(100%/3)]";
+        return 'after:ml-[calc(100%/3)]'
       case 2:
-        return "after:ml-[calc(100%/3*2)]";
+        return 'after:ml-[calc(100%/3*2)]'
     }
-  };
+  }
 
   const activeContentStyle = () => {
     switch (activeTab) {
       case 0:
-        return "translate-x-0";
+        return 'translate-x-0'
       case 1:
-        return "-translate-x-[calc(100%/3)]";
+        return '-translate-x-[calc(100%/3)]'
       case 2:
-        return "-translate-x-[calc(100%/3*2)]";
+        return '-translate-x-[calc(100%/3*2)]'
     }
-  };
+  }
   return (
     <div className="overflow-x-hidden lg:mt-10">
       <div className="text-sm font-semibold text-center text-gray-500 border-b-2">
@@ -70,7 +70,7 @@ const SakeDescriptionTabs: FC<SakeDescriptionProps> = ({ description }) => {
             components={{
               ul: ({ node, ...props }) => (
                 <ul className="ml-8 list-disc">{props.children}</ul>
-              ),
+              )
             }}
           >
             {description?.itemInfo}
@@ -81,7 +81,7 @@ const SakeDescriptionTabs: FC<SakeDescriptionProps> = ({ description }) => {
             components={{
               ul: ({ node, ...props }) => (
                 <ul className="ml-8 list-disc">{props.children}</ul>
-              ),
+              )
             }}
           >
             {description?.recommendation}
@@ -89,21 +89,21 @@ const SakeDescriptionTabs: FC<SakeDescriptionProps> = ({ description }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 interface SakeCardProps {
-  sake: SakeInfo;
+  sake: SakeInfo
 }
 const SakeCard: FC<SakeCardProps> = ({ sake }) => {
   useEffect(() => {
-    const hash = window.location.hash;
+    const hash = window.location.hash
     if (hash) {
-      const id = hash.replace("#", "");
-      const element = document.getElementById(id);
-      element?.scrollIntoView({ behavior: "smooth" });
+      const id = hash.replace('#', '')
+      const element = document.getElementById(id)
+      element?.scrollIntoView({ behavior: 'smooth' })
     }
-  }, []);
+  }, [])
 
   return (
     <div id={sake.id}>
@@ -127,15 +127,15 @@ const SakeCard: FC<SakeCardProps> = ({ sake }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
 const Sake: FC = () => {
-  const sakeInfo = sakes.getSakeInfoList();
+  const sakeInfo = sakes.getSakeInfoList()
 
   return (
     <div className="px-4 mx-auto w-full sm:px-8 md:overflow-scroll md:px-14 max-w-[1000px] md:h-[100vh] md:snap-y md:snap-mandatory md:scroll-smooth">
-      {sakeInfo.map((sake) => (
+      {sakeInfo.map(sake => (
         <div
           key={sake.title}
           id={sake.title}
@@ -151,7 +151,7 @@ const Sake: FC = () => {
         <ContactUs />
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Sake;
+export default Sake
