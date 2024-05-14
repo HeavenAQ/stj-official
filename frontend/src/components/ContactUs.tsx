@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import emailjs from '@emailjs/browser'
 import toast from 'react-hot-toast'
 import 'react-phone-number-input/style.css'
@@ -6,7 +6,6 @@ import PhoneInput from 'react-phone-number-input'
 import SakeOrderCards from './SakeOrderCards'
 import { sakes } from '../data/sakes'
 import { Order } from '../types'
-import { usePlacesWidget } from 'react-google-autocomplete'
 import Loading from './Loading'
 
 const serviceID = process.env.REACT_APP_EMAILJS_SERVICE_ID
@@ -25,27 +24,17 @@ const initOrders = (sakes: string[]) => {
 }
 
 const ContactUs: React.FC = () => {
-  const [name, setName] = React.useState<string>('')
-  const [email, setEmail] = React.useState<string>('')
-  const [phone, setPhone] = React.useState<any>()
-  const [address, setAddress] = React.useState<string>('')
-  const [backupAddress, setBackupAddress] = React.useState<string>('')
-  const [spinner, setSpinner] = React.useState<boolean>(false)
+  const [name, setName] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [phone, setPhone] = useState<any>()
+  const [address, setAddress] = useState<string>('')
+  const [backupAddress, setBackupAddress] = useState<string>('')
+  const [spinner, setSpinner] = useState<boolean>(false)
 
   // initialize the order list
-  const [orders, setOrders] = React.useState<Order[]>(initOrders(sakes.chn))
+  const [orders, setOrders] = useState<Order[]>(initOrders(sakes.chn))
 
   // setup google map API
-  const { ref } = usePlacesWidget<HTMLInputElement>({
-    apiKey: googleMapAPIKey,
-    onPlaceSelected: place => {
-      setAddress(place.formatted_address)
-    },
-    options: {
-      types: ['(regions)'],
-      componentRestrictions: { country: 'tw' }
-    }
-  })
 
   // send email to the admin when form submitted
   const onSubmit = (ev: React.FormEvent) => {
@@ -158,7 +147,6 @@ const ContactUs: React.FC = () => {
           </div>
           <div className="flex flex-wrap px-3 -mx-3 mb-6">
             <input
-              ref={ref}
               className="block py-3 px-4 mb-3 w-full leading-tight bg-white rounded border appearance-none"
               placeholder="請輸入地址"
               type="text"

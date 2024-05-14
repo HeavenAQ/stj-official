@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AxiosError, HttpStatusCode } from 'axios'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/user'
 import Loading from '../components/Loading'
+import FormLayout from '../layout/Form'
 
 interface LoginParams {
   email: string
@@ -46,23 +47,25 @@ export default function Login() {
   const mutation = useLoginMutation()
 
   // on submit login
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const onSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault()
 
-    // ensure email and password are valid
-    if (!email || !password) {
-      return
-    } else if (password.length < 8) {
-      toast.error('密碼長度不足')
-    }
+      // ensure email and password are valid
+      if (!email || !password) {
+        return
+      } else if (password.length < 8) {
+        toast.error('密碼長度不足')
+      }
 
-    // call login mutation
-    mutation.mutate({ email, password })
-  }
+      // call login mutation
+      mutation.mutate({ email, password })
+    },
+    [email, password, mutation]
+  )
 
   return (
-    <div className="max-h-[700px] w-[90%] sm:w-[80%] md:w-[70%] max-w-[500px] h-[60%] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl bg-zinc-600 flex flex-col px-10 shadow-xl shadow-gray-500 justify-center animate-fade">
-      <h1 className="mb-3 text-3xl text-center text-white">會員登入</h1>
+    <FormLayout title="會員登入">
       {mutation.isPending && (
         <div className="flex justify-center items-center mx-auto mt-20 w-32 h-32">
           <Loading />
@@ -128,6 +131,6 @@ export default function Login() {
           註冊
         </button>
       </form>
-    </div>
+    </FormLayout>
   )
 }

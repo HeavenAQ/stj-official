@@ -25,11 +25,14 @@ export async function registerUser(email: string, password: string) {
 export type UserData = {
   id: string
   email: string
-  phnoe: string
+  phone: string
   first_name: string
   last_name: string
   language: string
   address: string
+  line_id: string
+  gender: string
+  birth_year: number
 }
 
 interface LoginUserResponse {

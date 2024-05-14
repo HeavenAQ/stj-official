@@ -21,8 +21,8 @@ export default function Navbar() {
   }
 
   return (
-    <div className="flex fixed top-0 left-1/2 z-50 justify-evenly items-center px-3 w-full h-20 bg-white -translate-x-1/2 max-w-[1000px]">
-      <div className="flex relative justify-between items-center w-full h-full">
+    <div className="flex fixed top-0 left-1/2 z-50 justify-evenly items-center px-3 w-full h-20 bg-white -translate-x-1/2">
+      <div className="flex relative justify-between items-center w-full h-full max-w-[1000px]">
         <div className="inline-flex justify-evenly items-center space-x-5">
           <HiBars3BottomLeft className="text-3xl text-zinc-900" />
           {user === undefined ? (
