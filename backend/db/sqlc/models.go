@@ -246,6 +246,8 @@ type User struct {
 	LastName  string             `json:"last_name"`
 	Language  LanguageCode       `json:"language"`
 	Address   string             `json:"address"`
+	Longitude pgtype.Float8      `json:"longitude"`
+	Latitude  pgtype.Float8      `json:"latitude"`
 	LastLogin pgtype.Timestamptz `json:"last_login"`
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`

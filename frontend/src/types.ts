@@ -7,6 +7,6 @@ export interface Order {
 export enum Gender {
   MALE = 'male',
   FEMALE = 'female',
-  NOT_SPECIFIED = 'not_specified',
-  NOT_DISCLOSED = 'not_disclosed'
+  NOT_SPECIFIED = 'not-specified',
+  NOT_DISCLOSED = 'not-disclosed'
 }

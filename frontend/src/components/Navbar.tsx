@@ -1,21 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
 import {
   HiOutlineUserCircle,
   HiOutlineShoppingCart,
   HiBars3BottomLeft
 } from 'react-icons/hi2'
-import { getUser } from '../api/user'
+import { useUserQuery } from '../utils/query'
 
 export default function Navbar() {
-  const {
-    data: user,
-    isError,
-    error
-  } = useQuery({
-    queryKey: ['user'],
-    queryFn: () => getUser()
-  })
-
+  const { data: user, isError, error } = useUserQuery()
   if (isError) {
     console.log(error)
   }
@@ -39,11 +30,13 @@ export default function Navbar() {
             </a>
           )}
         </div>
-        <img
-          className="absolute top-1/2 left-1/2 h-full -translate-x-1/2 -translate-y-1/2"
-          src="/images/misc/logo.svg"
-          alt="logo"
-        />
+        <a href="/">
+          <img
+            className="absolute top-1/2 left-1/2 h-full -translate-x-1/2 -translate-y-1/2"
+            src="/images/misc/logo.svg"
+            alt="logo"
+          />
+        </a>
         <HiOutlineShoppingCart className="text-3xl font-thin text-zinc-900" />
       </div>
     </div>

@@ -13,23 +13,25 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (email, phone, line_id, birth_year, gender, PASSWORD, first_name, last_name,
-    LANGUAGE, address)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    LANGUAGE, address, longitude, latitude)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 RETURNING
-    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, longitude, latitude, last_login, created_at, updated_at
 `
 
 type CreateUserParams struct {
-	Email     string       `json:"email"`
-	Phone     pgtype.Text  `json:"phone"`
-	LineID    pgtype.Text  `json:"line_id"`
-	BirthYear pgtype.Int4  `json:"birth_year"`
-	Gender    Gender       `json:"gender"`
-	Password  string       `json:"password"`
-	FirstName string       `json:"first_name"`
-	LastName  string       `json:"last_name"`
-	Language  LanguageCode `json:"language"`
-	Address   string       `json:"address"`
+	Email     string        `json:"email"`
+	Phone     pgtype.Text   `json:"phone"`
+	LineID    pgtype.Text   `json:"line_id"`
+	BirthYear pgtype.Int4   `json:"birth_year"`
+	Gender    Gender        `json:"gender"`
+	Password  string        `json:"password"`
+	FirstName string        `json:"first_name"`
+	LastName  string        `json:"last_name"`
+	Language  LanguageCode  `json:"language"`
+	Address   string        `json:"address"`
+	Longitude pgtype.Float8 `json:"longitude"`
+	Latitude  pgtype.Float8 `json:"latitude"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -44,6 +46,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.LastName,
 		arg.Language,
 		arg.Address,
+		arg.Longitude,
+		arg.Latitude,
 	)
 	var i User
 	err := row.Scan(
@@ -59,6 +63,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.LastName,
 		&i.Language,
 		&i.Address,
+		&i.Longitude,
+		&i.Latitude,
 		&i.LastLogin,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -78,7 +84,7 @@ func (q *Queries) DeleteUser(ctx context.Context, pk int64) error {
 
 const getUser = `-- name: GetUser :one
 SELECT
-    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, longitude, latitude, last_login, created_at, updated_at
 FROM
     users
 WHERE
@@ -102,6 +108,8 @@ func (q *Queries) GetUser(ctx context.Context, pk int64) (User, error) {
 		&i.LastName,
 		&i.Language,
 		&i.Address,
+		&i.Longitude,
+		&i.Latitude,
 		&i.LastLogin,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -111,7 +119,7 @@ func (q *Queries) GetUser(ctx context.Context, pk int64) (User, error) {
 
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT
-    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, longitude, latitude, last_login, created_at, updated_at
 FROM
     users
 WHERE
@@ -134,6 +142,8 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.LastName,
 		&i.Language,
 		&i.Address,
+		&i.Longitude,
+		&i.Latitude,
 		&i.LastLogin,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -143,7 +153,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 
 const getUserById = `-- name: GetUserById :one
 SELECT
-    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, longitude, latitude, last_login, created_at, updated_at
 FROM
     users
 WHERE
@@ -166,6 +176,8 @@ func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error)
 		&i.LastName,
 		&i.Language,
 		&i.Address,
+		&i.Longitude,
+		&i.Latitude,
 		&i.LastLogin,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -175,7 +187,7 @@ func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error)
 
 const getUserByPhone = `-- name: GetUserByPhone :one
 SELECT
-    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, longitude, latitude, last_login, created_at, updated_at
 FROM
     users
 WHERE
@@ -198,6 +210,8 @@ func (q *Queries) GetUserByPhone(ctx context.Context, phone pgtype.Text) (User, 
 		&i.LastName,
 		&i.Language,
 		&i.Address,
+		&i.Longitude,
+		&i.Latitude,
 		&i.LastLogin,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -207,7 +221,7 @@ func (q *Queries) GetUserByPhone(ctx context.Context, phone pgtype.Text) (User, 
 
 const listUsers = `-- name: ListUsers :many
 SELECT
-    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, longitude, latitude, last_login, created_at, updated_at
 FROM
     users
 LIMIT $1 OFFSET $2
@@ -240,6 +254,8 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 			&i.LastName,
 			&i.Language,
 			&i.Address,
+			&i.Longitude,
+			&i.Latitude,
 			&i.LastLogin,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -268,25 +284,29 @@ SET
     address = $8,
     line_id = $9,
     gender = $10,
-    birth_year = $11
+    birth_year = $11,
+    longitude = $12,
+    latitude = $13
 WHERE
     pk = $1
 RETURNING
-    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, longitude, latitude, last_login, created_at, updated_at
 `
 
 type UpdateUserParams struct {
-	Pk        int64        `json:"pk"`
-	Email     string       `json:"email"`
-	Phone     pgtype.Text  `json:"phone"`
-	Password  string       `json:"password"`
-	FirstName string       `json:"first_name"`
-	LastName  string       `json:"last_name"`
-	Language  LanguageCode `json:"language"`
-	Address   string       `json:"address"`
-	LineID    pgtype.Text  `json:"line_id"`
-	Gender    Gender       `json:"gender"`
-	BirthYear pgtype.Int4  `json:"birth_year"`
+	Pk        int64         `json:"pk"`
+	Email     string        `json:"email"`
+	Phone     pgtype.Text   `json:"phone"`
+	Password  string        `json:"password"`
+	FirstName string        `json:"first_name"`
+	LastName  string        `json:"last_name"`
+	Language  LanguageCode  `json:"language"`
+	Address   string        `json:"address"`
+	LineID    pgtype.Text   `json:"line_id"`
+	Gender    Gender        `json:"gender"`
+	BirthYear pgtype.Int4   `json:"birth_year"`
+	Longitude pgtype.Float8 `json:"longitude"`
+	Latitude  pgtype.Float8 `json:"latitude"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -302,6 +322,8 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.LineID,
 		arg.Gender,
 		arg.BirthYear,
+		arg.Longitude,
+		arg.Latitude,
 	)
 	var i User
 	err := row.Scan(
@@ -317,6 +339,86 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		&i.LastName,
 		&i.Language,
 		&i.Address,
+		&i.Longitude,
+		&i.Latitude,
+		&i.LastLogin,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateUserById = `-- name: UpdateUserById :one
+UPDATE
+    users
+SET
+    email = $2,
+    phone = $3,
+    PASSWORD = $4,
+    first_name = $5,
+    last_name = $6,
+    LANGUAGE =
+    $7,
+    address = $8,
+    line_id = $9,
+    gender = $10,
+    birth_year = $11,
+    longitude = $12,
+    latitude = $13
+WHERE
+    id = $1
+RETURNING
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, longitude, latitude, last_login, created_at, updated_at
+`
+
+type UpdateUserByIdParams struct {
+	ID        pgtype.UUID   `json:"id"`
+	Email     string        `json:"email"`
+	Phone     pgtype.Text   `json:"phone"`
+	Password  string        `json:"password"`
+	FirstName string        `json:"first_name"`
+	LastName  string        `json:"last_name"`
+	Language  LanguageCode  `json:"language"`
+	Address   string        `json:"address"`
+	LineID    pgtype.Text   `json:"line_id"`
+	Gender    Gender        `json:"gender"`
+	BirthYear pgtype.Int4   `json:"birth_year"`
+	Longitude pgtype.Float8 `json:"longitude"`
+	Latitude  pgtype.Float8 `json:"latitude"`
+}
+
+func (q *Queries) UpdateUserById(ctx context.Context, arg UpdateUserByIdParams) (User, error) {
+	row := q.db.QueryRow(ctx, updateUserById,
+		arg.ID,
+		arg.Email,
+		arg.Phone,
+		arg.Password,
+		arg.FirstName,
+		arg.LastName,
+		arg.Language,
+		arg.Address,
+		arg.LineID,
+		arg.Gender,
+		arg.BirthYear,
+		arg.Longitude,
+		arg.Latitude,
+	)
+	var i User
+	err := row.Scan(
+		&i.Pk,
+		&i.ID,
+		&i.LineID,
+		&i.BirthYear,
+		&i.Gender,
+		&i.Phone,
+		&i.Email,
+		&i.Password,
+		&i.FirstName,
+		&i.LastName,
+		&i.Language,
+		&i.Address,
+		&i.Longitude,
+		&i.Latitude,
 		&i.LastLogin,
 		&i.CreatedAt,
 		&i.UpdatedAt,

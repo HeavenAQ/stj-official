@@ -31,6 +31,14 @@ func createRandomUser(t *testing.T) User {
 			Valid: true,
 		},
 		Gender: GenderNotDisclosed,
+		Longitude: pgtype.Float8{
+			Float64: utils.RandomFloat(-180, 180),
+			Valid:   true,
+		},
+		Latitude: pgtype.Float8{
+			Float64: utils.RandomFloat(-90, 90),
+			Valid:   true,
+		},
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)
@@ -204,4 +212,67 @@ func TestQueries_DeleteUser(t *testing.T) {
 
 	_, err = testQueries.GetUser(context.Background(), user.Pk)
 	require.Error(t, err)
+}
+
+func TestQueries_UpdateUserById(t *testing.T) {
+	user1 := createRandomUser(t)
+	arg := UpdateUserByIdParams{
+		ID:       user1.ID,
+		Password: utils.RandomAlphabetString(6),
+		Email:    utils.RandomNumberString(6) + "@gmail.com",
+		Phone: pgtype.Text{
+			String: utils.RandomNumberString(10),
+			Valid:  true,
+		},
+		FirstName: utils.RandomUserName(),
+		LastName:  utils.RandomUserName(),
+		Language:  LanguageCode(utils.RandomLanguage()),
+		Address:   utils.RandomAlphabetString(10),
+		Gender:    GenderFemale,
+		BirthYear: pgtype.Int4{
+			Int32: int32(utils.RandomInt(1900, 2021)),
+			Valid: true,
+		},
+		LineID: pgtype.Text{
+			String: utils.RandomNumberString(10),
+			Valid:  true,
+		},
+		Longitude: pgtype.Float8{
+			Float64: utils.RandomFloat(-180, 180),
+			Valid:   true,
+		},
+		Latitude: pgtype.Float8{
+			Float64: utils.RandomFloat(-90, 90),
+			Valid:   true,
+		},
+	}
+
+	// update user and check for errors
+	user2, err := testQueries.UpdateUserById(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, user2)
+
+	// check if the user is updated correctly
+	require.Equal(t, arg.Email, user2.Email)
+	require.Equal(t, arg.Phone, user2.Phone)
+	require.Equal(t, arg.FirstName, user2.FirstName)
+	require.Equal(t, arg.LastName, user2.LastName)
+	require.Equal(t, arg.Language, user2.Language)
+	require.Equal(t, arg.Address, user2.Address)
+	require.Equal(t, arg.LineID, user2.LineID)
+	require.Equal(t, arg.BirthYear, user2.BirthYear)
+	require.Equal(t, arg.Gender, user2.Gender)
+	require.Equal(t, arg.Longitude, user2.Longitude)
+	require.Equal(t, arg.Latitude, user2.Latitude)
+
+	// check some fields are not changed mistakenly
+	require.Equal(t, user1.Pk, user2.Pk)
+	require.Equal(t, user1.ID, user2.ID)
+	require.Equal(t, arg.Password, user2.Password)
+	require.Equal(t, user1.CreatedAt.Time, user2.CreatedAt.Time)
+	require.NotEqual(t, user1.UpdatedAt.Time, user2.UpdatedAt.Time)
+	require.NotEqual(t, user1.LastLogin.Time, user2.LastLogin.Time)
+
+	// clean up
+	testQueries.DeleteUser(context.Background(), user1.Pk)
 }

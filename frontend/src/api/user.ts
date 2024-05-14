@@ -1,16 +1,19 @@
 import axios, { AxiosResponse } from 'axios'
+import { Gender } from '../types'
 
 interface CreateUserRequest {
   email: string
   password: string
   language: 'chn'
+  gender: Gender
 }
 
 export async function registerUser(email: string, password: string) {
   const data: CreateUserRequest = {
     email,
     password: btoa(password), // password is encoded in base64
-    language: 'chn'
+    language: 'chn',
+    gender: Gender.NOT_DISCLOSED
   }
 
   const headers = {
@@ -23,7 +26,6 @@ export async function registerUser(email: string, password: string) {
 }
 
 export type UserData = {
-  id: string
   email: string
   phone: string
   first_name: string
@@ -31,8 +33,10 @@ export type UserData = {
   language: string
   address: string
   line_id: string
-  gender: string
+  gender: Gender
   birth_year: number
+  latitude: number
+  longitude: number
 }
 
 interface LoginUserResponse {
@@ -62,6 +66,17 @@ export async function getUser() {
   }
 
   return axios.get('http://localhost:8080/api/v1/users', {
+    headers: headers
+  }) as Promise<AxiosResponse<UserData>>
+}
+
+export async function updateUser(data: UserData) {
+  const headers = {
+    Authorization: `Bearer ${sessionStorage.getItem('access_token')}`,
+    'Content-Type': 'application/json'
+  }
+
+  return axios.put('http://localhost:8080/api/v1/users', data, {
     headers: headers
   }) as Promise<AxiosResponse<UserData>>
 }

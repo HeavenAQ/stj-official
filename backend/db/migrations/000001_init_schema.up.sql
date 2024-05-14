@@ -65,6 +65,8 @@ CREATE TABLE "users" (
     "last_name" text NOT NULL DEFAULT '',
     "language" language_code NOT NULL DEFAULT 'chn',
     "address" text NOT NULL DEFAULT '',
+    "longitude" float,
+    "latitude" float,
     "last_login" timestamptz NOT NULL DEFAULT now(),
     "created_at" timestamptz NOT NULL DEFAULT now(),
     "updated_at" timestamptz NOT NULL DEFAULT now()

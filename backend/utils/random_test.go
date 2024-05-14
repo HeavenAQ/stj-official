@@ -173,3 +173,33 @@ func TestRandomNumberString(t *testing.T) {
 		})
 	}
 }
+
+func TestRandomFloat(t *testing.T) {
+	type args struct {
+		min int64
+		max int64
+	}
+	tests := []struct {
+		name string
+		args args
+		want func(val float64) bool
+	}{
+		{
+			name: "Test RandomFloat",
+			args: args{
+				min: 0,
+				max: 100,
+			},
+			want: func(val float64) bool {
+				return val >= 0 && val <= 100
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := RandomFloat(float64(tt.args.min), float64(tt.args.max)); !tt.want(got) {
+				t.Errorf("RandomFloat() = %v, want 0 <= val <= 100", got)
+			}
+		})
+	}
+}

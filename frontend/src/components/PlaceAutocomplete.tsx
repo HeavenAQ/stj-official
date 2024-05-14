@@ -3,9 +3,15 @@ import { useMapsLibrary } from '@vis.gl/react-google-maps'
 
 interface Props {
   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void
+  setBackupAddress: React.Dispatch<React.SetStateAction<string>>
+  backupAddress: string
 }
 
-export const PlaceAutocomplete = ({ onPlaceSelect }: Props) => {
+export const PlaceAutocomplete = ({
+  setBackupAddress,
+  onPlaceSelect,
+  backupAddress
+}: Props) => {
   const [placeAutocomplete, setPlaceAutocomplete] =
     useState<google.maps.places.Autocomplete | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -26,6 +32,9 @@ export const PlaceAutocomplete = ({ onPlaceSelect }: Props) => {
 
     placeAutocomplete.addListener('place_changed', () => {
       onPlaceSelect(placeAutocomplete.getPlace())
+      setBackupAddress(
+        placeAutocomplete.getPlace().formatted_address || backupAddress
+      )
     })
   }, [onPlaceSelect, placeAutocomplete])
 
@@ -34,6 +43,8 @@ export const PlaceAutocomplete = ({ onPlaceSelect }: Props) => {
       className="block py-3 px-4 mb-3 w-full leading-tight rounded border appearance-none"
       ref={inputRef}
       placeholder="請輸入地址"
+      onChange={ev => setBackupAddress(ev.target.value)}
+      value={backupAddress}
     />
   )
 }
