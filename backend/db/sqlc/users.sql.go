@@ -12,16 +12,19 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (email, phone, PASSWORD, first_name, last_name,
+INSERT INTO users (email, phone, line_id, birth_year, gender, PASSWORD, first_name, last_name,
     LANGUAGE, address)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 RETURNING
-    pk, id, email, phone, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
 `
 
 type CreateUserParams struct {
 	Email     string       `json:"email"`
 	Phone     pgtype.Text  `json:"phone"`
+	LineID    pgtype.Text  `json:"line_id"`
+	BirthYear pgtype.Int4  `json:"birth_year"`
+	Gender    Gender       `json:"gender"`
 	Password  string       `json:"password"`
 	FirstName string       `json:"first_name"`
 	LastName  string       `json:"last_name"`
@@ -33,6 +36,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	row := q.db.QueryRow(ctx, createUser,
 		arg.Email,
 		arg.Phone,
+		arg.LineID,
+		arg.BirthYear,
+		arg.Gender,
 		arg.Password,
 		arg.FirstName,
 		arg.LastName,
@@ -43,8 +49,11 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	err := row.Scan(
 		&i.Pk,
 		&i.ID,
-		&i.Email,
+		&i.LineID,
+		&i.BirthYear,
+		&i.Gender,
 		&i.Phone,
+		&i.Email,
 		&i.Password,
 		&i.FirstName,
 		&i.LastName,
@@ -69,7 +78,7 @@ func (q *Queries) DeleteUser(ctx context.Context, pk int64) error {
 
 const getUser = `-- name: GetUser :one
 SELECT
-    pk, id, email, phone, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
 FROM
     users
 WHERE
@@ -83,8 +92,11 @@ func (q *Queries) GetUser(ctx context.Context, pk int64) (User, error) {
 	err := row.Scan(
 		&i.Pk,
 		&i.ID,
-		&i.Email,
+		&i.LineID,
+		&i.BirthYear,
+		&i.Gender,
 		&i.Phone,
+		&i.Email,
 		&i.Password,
 		&i.FirstName,
 		&i.LastName,
@@ -99,7 +111,7 @@ func (q *Queries) GetUser(ctx context.Context, pk int64) (User, error) {
 
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT
-    pk, id, email, phone, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
 FROM
     users
 WHERE
@@ -112,8 +124,11 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	err := row.Scan(
 		&i.Pk,
 		&i.ID,
-		&i.Email,
+		&i.LineID,
+		&i.BirthYear,
+		&i.Gender,
 		&i.Phone,
+		&i.Email,
 		&i.Password,
 		&i.FirstName,
 		&i.LastName,
@@ -128,7 +143,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 
 const getUserById = `-- name: GetUserById :one
 SELECT
-    pk, id, email, phone, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
 FROM
     users
 WHERE
@@ -141,8 +156,11 @@ func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error)
 	err := row.Scan(
 		&i.Pk,
 		&i.ID,
-		&i.Email,
+		&i.LineID,
+		&i.BirthYear,
+		&i.Gender,
 		&i.Phone,
+		&i.Email,
 		&i.Password,
 		&i.FirstName,
 		&i.LastName,
@@ -157,7 +175,7 @@ func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error)
 
 const getUserByPhone = `-- name: GetUserByPhone :one
 SELECT
-    pk, id, email, phone, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
 FROM
     users
 WHERE
@@ -170,8 +188,11 @@ func (q *Queries) GetUserByPhone(ctx context.Context, phone pgtype.Text) (User, 
 	err := row.Scan(
 		&i.Pk,
 		&i.ID,
-		&i.Email,
+		&i.LineID,
+		&i.BirthYear,
+		&i.Gender,
 		&i.Phone,
+		&i.Email,
 		&i.Password,
 		&i.FirstName,
 		&i.LastName,
@@ -186,7 +207,7 @@ func (q *Queries) GetUserByPhone(ctx context.Context, phone pgtype.Text) (User, 
 
 const listUsers = `-- name: ListUsers :many
 SELECT
-    pk, id, email, phone, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
 FROM
     users
 LIMIT $1 OFFSET $2
@@ -209,8 +230,11 @@ func (q *Queries) ListUsers(ctx context.Context, arg ListUsersParams) ([]User, e
 		if err := rows.Scan(
 			&i.Pk,
 			&i.ID,
-			&i.Email,
+			&i.LineID,
+			&i.BirthYear,
+			&i.Gender,
 			&i.Phone,
+			&i.Email,
 			&i.Password,
 			&i.FirstName,
 			&i.LastName,
@@ -241,11 +265,14 @@ SET
     last_name = $6,
     LANGUAGE =
     $7,
-    address = $8
+    address = $8,
+    line_id = $9,
+    gender = $10,
+    birth_year = $11
 WHERE
     pk = $1
 RETURNING
-    pk, id, email, phone, password, first_name, last_name, language, address, last_login, created_at, updated_at
+    pk, id, line_id, birth_year, gender, phone, email, password, first_name, last_name, language, address, last_login, created_at, updated_at
 `
 
 type UpdateUserParams struct {
@@ -257,6 +284,9 @@ type UpdateUserParams struct {
 	LastName  string       `json:"last_name"`
 	Language  LanguageCode `json:"language"`
 	Address   string       `json:"address"`
+	LineID    pgtype.Text  `json:"line_id"`
+	Gender    Gender       `json:"gender"`
+	BirthYear pgtype.Int4  `json:"birth_year"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -269,13 +299,19 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.LastName,
 		arg.Language,
 		arg.Address,
+		arg.LineID,
+		arg.Gender,
+		arg.BirthYear,
 	)
 	var i User
 	err := row.Scan(
 		&i.Pk,
 		&i.ID,
-		&i.Email,
+		&i.LineID,
+		&i.BirthYear,
+		&i.Gender,
 		&i.Phone,
+		&i.Email,
 		&i.Password,
 		&i.FirstName,
 		&i.LastName,

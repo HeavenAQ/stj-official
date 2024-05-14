@@ -38,5 +38,7 @@ DROP TYPE IF EXISTS language_code;
 
 DROP TYPE IF EXISTS product_status;
 
+DROP TYPE IF EXISTS gender;
+
 -- Drop the UUID extension
 DROP EXTENSION IF EXISTS "uuid-ossp";

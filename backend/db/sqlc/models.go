@@ -11,6 +11,50 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Gender string
+
+const (
+	GenderMale         Gender = "male"
+	GenderFemale       Gender = "female"
+	GenderNotSpecified Gender = "not-specified"
+	GenderNotDisclosed Gender = "not-disclosed"
+)
+
+func (e *Gender) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = Gender(s)
+	case string:
+		*e = Gender(s)
+	default:
+		return fmt.Errorf("unsupported scan type for Gender: %T", src)
+	}
+	return nil
+}
+
+type NullGender struct {
+	Gender Gender `json:"gender"`
+	Valid  bool   `json:"valid"` // Valid is true if Gender is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullGender) Scan(value interface{}) error {
+	if value == nil {
+		ns.Gender, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.Gender.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullGender) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.Gender), nil
+}
+
 type LanguageCode string
 
 const (
@@ -192,8 +236,11 @@ type ProductTranslation struct {
 type User struct {
 	Pk        int64              `json:"pk"`
 	ID        pgtype.UUID        `json:"id"`
-	Email     string             `json:"email"`
+	LineID    pgtype.Text        `json:"line_id"`
+	BirthYear pgtype.Int4        `json:"birth_year"`
+	Gender    Gender             `json:"gender"`
 	Phone     pgtype.Text        `json:"phone"`
+	Email     string             `json:"email"`
 	Password  string             `json:"password"`
 	FirstName string             `json:"first_name"`
 	LastName  string             `json:"last_name"`

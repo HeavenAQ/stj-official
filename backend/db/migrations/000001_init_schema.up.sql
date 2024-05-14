@@ -20,6 +20,13 @@ CREATE TYPE order_status AS ENUM (
     'cancelled'
 );
 
+CREATE TYPE gender AS ENUM (
+    'male',
+    'female',
+    'not-specified',
+    'not-disclosed'
+);
+
 -- Products table
 CREATE TABLE "products" (
     "pk" bigserial PRIMARY KEY,
@@ -48,8 +55,11 @@ CREATE TABLE "product_translations" (
 CREATE TABLE "users" (
     "pk" bigserial PRIMARY KEY,
     "id" uuid DEFAULT uuid_generate_v4 (),
-    "email" text UNIQUE NOT NULL DEFAULT '',
+    "line_id" text UNIQUE,
+    "birth_year" int,
+    "gender" gender NOT NULL DEFAULT 'not-disclosed',
     "phone" text UNIQUE,
+    "email" text UNIQUE NOT NULL DEFAULT '',
     "password" text NOT NULL DEFAULT '',
     "first_name" text NOT NULL DEFAULT '',
     "last_name" text NOT NULL DEFAULT '',

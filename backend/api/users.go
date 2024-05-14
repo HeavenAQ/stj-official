@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	db "stj-ecommerce/db/sqlc"
 	"stj-ecommerce/token"
@@ -12,8 +11,11 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type CreateUserRequest struct {
+type UserInfoRequest struct {
 	Email     string          `json:"email" binding:"required"`
+	LineID    pgtype.Text     `json:"line_id"`
+	BirthYear pgtype.Int4     `json:"birth_year"`
+	Gender    db.Gender       `json:"gender"`
 	Phone     pgtype.Text     `json:"phone"`
 	Password  string          `json:"password" binding:"required,min=8,max=100"`
 	FirstName string          `json:"first_name"`
@@ -24,6 +26,9 @@ type CreateUserRequest struct {
 
 type UserInfoResponse struct {
 	ID        pgtype.UUID     `json:"id"`
+	LineID    pgtype.Text     `json:"line_id"`
+	BirthYear pgtype.Int4     `json:"birth_year"`
+	Gender    db.Gender       `json:"gender"`
 	Email     string          `json:"email"`
 	Phone     string          `json:"phone"`
 	FirstName string          `json:"first_name"`
@@ -42,11 +47,14 @@ func (server *Server) userResponse(user db.User) UserInfoResponse {
 		LastName:  user.LastName,
 		Language:  user.Language,
 		Address:   user.Address,
+		LineID:    user.LineID,
+		BirthYear: user.BirthYear,
+		Gender:    user.Gender,
 	}
 }
 
 func (server *Server) CreateUser(ctx *gin.Context) {
-	var req CreateUserRequest
+	var req UserInfoRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -68,6 +76,9 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 		LastName:  req.LastName,
 		Language:  req.Language,
 		Address:   req.Address,
+		LineID:    req.LineID,
+		Gender:    req.Gender,
+		BirthYear: req.BirthYear,
 	}
 
 	// create user in database
@@ -86,7 +97,6 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 }
 
 func (server *Server) GetUser(ctx *gin.Context) {
-	fmt.Println("GetUser")
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 	user, err := server.store.GetUserById(ctx, authPayload.UserID)
 	if err != nil {

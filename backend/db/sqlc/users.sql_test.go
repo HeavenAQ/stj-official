@@ -22,6 +22,15 @@ func createRandomUser(t *testing.T) User {
 		LastName:  utils.RandomUserName(),
 		Language:  LanguageCode(utils.RandomLanguage()),
 		Address:   utils.RandomAlphabetString(10),
+		LineID: pgtype.Text{
+			String: utils.RandomNumberString(10),
+			Valid:  true,
+		},
+		BirthYear: pgtype.Int4{
+			Int32: int32(utils.RandomInt(1900, 2021)),
+			Valid: true,
+		},
+		Gender: GenderNotDisclosed,
 	}
 
 	user, err := testQueries.CreateUser(context.Background(), arg)
@@ -37,6 +46,9 @@ func createRandomUser(t *testing.T) User {
 	require.Equal(t, arg.LastName, user.LastName)
 	require.Equal(t, arg.Language, user.Language)
 	require.Equal(t, arg.Address, user.Address)
+	require.Equal(t, arg.LineID, user.LineID)
+	require.Equal(t, arg.BirthYear, user.BirthYear)
+	require.Equal(t, arg.Gender, user.Gender)
 	require.NotZero(t, user.Pk)
 	require.NotZero(t, user.ID)
 	require.NotZero(t, user.CreatedAt)
@@ -55,6 +67,9 @@ func checkSameUser(t *testing.T, user1, user2 User) {
 	require.Equal(t, user1.LastName, user2.LastName)
 	require.Equal(t, user1.Language, user2.Language)
 	require.Equal(t, user1.Address, user2.Address)
+	require.Equal(t, user1.LineID, user2.LineID)
+	require.Equal(t, user1.BirthYear, user2.BirthYear)
+	require.Equal(t, user1.Gender, user2.Gender)
 	require.WithinDuration(t, user1.CreatedAt.Time, user2.CreatedAt.Time, 0)
 	require.WithinDuration(t, user1.UpdatedAt.Time, user2.UpdatedAt.Time, 0)
 	require.WithinDuration(t, user1.LastLogin.Time, user2.LastLogin.Time, 0)
@@ -143,6 +158,15 @@ func TestQueries_UpdateUser(t *testing.T) {
 		LastName:  utils.RandomUserName(),
 		Language:  LanguageCode(utils.RandomLanguage()),
 		Address:   utils.RandomAlphabetString(10),
+		Gender:    GenderFemale,
+		BirthYear: pgtype.Int4{
+			Int32: int32(utils.RandomInt(1900, 2021)),
+			Valid: true,
+		},
+		LineID: pgtype.Text{
+			String: utils.RandomNumberString(10),
+			Valid:  true,
+		},
 	}
 
 	// update user and check for errors
@@ -157,6 +181,11 @@ func TestQueries_UpdateUser(t *testing.T) {
 	require.Equal(t, arg.LastName, user2.LastName)
 	require.Equal(t, arg.Language, user2.Language)
 	require.Equal(t, arg.Address, user2.Address)
+	require.Equal(t, arg.LineID, user2.LineID)
+	require.Equal(t, arg.BirthYear, user2.BirthYear)
+	require.Equal(t, arg.Gender, user2.Gender)
+
+	// check some fields are not changed mistakenly
 	require.Equal(t, user1.Pk, user2.Pk)
 	require.Equal(t, user1.ID, user2.ID)
 	require.Equal(t, arg.Password, user2.Password)
