@@ -10,16 +10,20 @@ import (
 	"stj-ecommerce/token"
 	"stj-ecommerce/utils"
 
+	"github.com/fatih/color"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Server struct {
-	config     utils.Config
-	store      *db.Store
-	router     *gin.Engine
-	tokenMaker token.Maker
+	config      utils.Config
+	store       *db.Store
+	router      *gin.Engine
+	tokenMaker  token.Maker
+	ErrorLogger *log.Logger
+	InforLogger *log.Logger
+	WarnLogger  *log.Logger
 }
 
 func (server *Server) Start() error {
@@ -84,6 +88,16 @@ func setupDatabaseStore(config utils.Config) *db.Store {
 	return store
 }
 
+func (server *Server) setupLogger() {
+	red := color.New(color.FgRed)
+	cyan := color.New(color.FgCyan)
+	yellow := color.New(color.FgYellow)
+
+	server.ErrorLogger = log.New(os.Stderr, red.Sprint("[ERROR] "), log.Ldate|log.Ltime|log.Llongfile)
+	server.InforLogger = log.New(os.Stdout, cyan.Sprint("[INFO] "), log.Ldate|log.Ltime|log.Llongfile)
+	server.WarnLogger = log.New(os.Stdout, yellow.Sprint("[WARN] "), log.Ldate|log.Ltime|log.Llongfile)
+}
+
 func NewServer(configPath string) (*Server, error) {
 	// load .env file
 	config, err := utils.LoadConfig(configPath)
@@ -102,6 +116,10 @@ func NewServer(configPath string) (*Server, error) {
 		log.Println("cannot create server")
 		return nil, err
 	}
+
+	// set up logger
+	server.setupLogger()
+
 	return server, err
 }
 

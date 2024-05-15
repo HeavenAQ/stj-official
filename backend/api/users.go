@@ -72,6 +72,7 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 	var req CreateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err)
 		return
 	}
 
@@ -79,6 +80,7 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 	password, err := utils.DecodeAndHashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err)
 		return
 	}
 
@@ -102,6 +104,7 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 	user, err := server.store.CreateUser(ctx, args)
 	if err != nil {
 		ctx.JSON(http.StatusConflict, server.userErrorResponse(err))
+		server.ErrorLogger.Println(err)
 		return
 	}
 
@@ -114,6 +117,7 @@ func (server *Server) GetUser(ctx *gin.Context) {
 	user, err := server.store.GetUserById(ctx, authPayload.UserID)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		server.ErrorLogger.Println(err)
 		return
 	}
 	ctx.JSON(http.StatusOK, server.userResponse(user))
@@ -139,6 +143,7 @@ func (server *Server) UpdateUser(ctx *gin.Context) {
 	var req UpdateUserRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err)
 		return
 	}
 
@@ -147,6 +152,7 @@ func (server *Server) UpdateUser(ctx *gin.Context) {
 	oldUser, err := server.store.GetUserById(ctx, userId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		server.ErrorLogger.Println(err)
 		return
 	}
 
@@ -169,6 +175,7 @@ func (server *Server) UpdateUser(ctx *gin.Context) {
 	user, err := server.store.UpdateUserById(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusConflict, server.userErrorResponse(err))
+		server.ErrorLogger.Println(err)
 		return
 	}
 

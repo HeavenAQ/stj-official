@@ -19,13 +19,13 @@ func (server *Server) setupV1Routes(api *gin.RouterGroup) {
 
 func (server *Server) setupV1ProductsRoutes(v1 *gin.RouterGroup) {
 
-	products := v1.Group("/products").Use(authMiddleware(server.tokenMaker))
+	products := v1.Group("/products").Use(server.authMiddleware(server.tokenMaker))
 	products.GET("", server.ListProducts)
 	products.DELETE("/:id", server.DeleteProduct)
 }
 
 func (server *Server) setupV1UsersRoutes(v1 *gin.RouterGroup) {
-	users := v1.Group("/users").Use(authMiddleware(server.tokenMaker))
+	users := v1.Group("/users").Use(server.authMiddleware(server.tokenMaker))
 	users.GET("", server.GetUser)
 	users.PUT("", server.UpdateUser)
 	//product.DELETE("/:id", server.DeleteUser)

@@ -30,7 +30,7 @@ CREATE TYPE gender AS ENUM (
 -- Products table
 CREATE TABLE "products" (
     "pk" bigserial PRIMARY KEY,
-    "id" uuid DEFAULT uuid_generate_v4 (),
+    "id" uuid UNIQUE DEFAULT uuid_generate_v4 (),
     "price" int NOT NULL DEFAULT 0,
     "discount" int NOT NULL DEFAULT 0,
     "imageURLs" text[] NOT NULL DEFAULT ARRAY[] ::text[],
@@ -54,7 +54,7 @@ CREATE TABLE "product_translations" (
 -- Users table
 CREATE TABLE "users" (
     "pk" bigserial PRIMARY KEY,
-    "id" uuid DEFAULT uuid_generate_v4 (),
+    "id" uuid UNIQUE DEFAULT uuid_generate_v4 (),
     "line_id" text UNIQUE,
     "birth_year" int,
     "gender" gender NOT NULL DEFAULT 'not-disclosed',
@@ -75,7 +75,7 @@ CREATE TABLE "users" (
 -- Orders table
 CREATE TABLE "orders" (
     "pk" bigserial PRIMARY KEY,
-    "id" uuid DEFAULT uuid_generate_v4 (),
+    "id" uuid UNIQUE DEFAULT uuid_generate_v4 (),
     "user_pk" bigint NOT NULL REFERENCES users (pk) ON DELETE CASCADE,
     "status" order_status NOT NULL DEFAULT 'pending',
     "is_paid" boolean NOT NULL DEFAULT FALSE,

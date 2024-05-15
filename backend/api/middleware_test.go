@@ -22,7 +22,7 @@ func addAuthorization(
 	userID pgtype.UUID,
 	duration time.Duration,
 ) {
-	token, err := tokenMaker.CreateToken(userID, duration)
+	token, _, err := tokenMaker.CreateToken(userID, duration)
 	require.NoError(t, err)
 	authorizationHeader := fmt.Sprintf("%s %s", authorizationType, token)
 	request.Header.Set(authorizationHeaderKey, authorizationHeader)
@@ -104,7 +104,7 @@ func Test_AuthMiddleware(t *testing.T) {
 			require.NoError(t, err)
 			defer server.Shutdown()
 
-			authMiddleware := authMiddleware(server.tokenMaker)
+			authMiddleware := server.authMiddleware(server.tokenMaker)
 
 			// create a request
 			authPath := "/auth"
