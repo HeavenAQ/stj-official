@@ -67,8 +67,12 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 	}
 
 	// create refresh token
+	sessionID := pgtype.UUID{
+		Bytes: uuid.New(),
+		Valid: true,
+	}
 	refreshToken, payload, err := server.tokenMaker.CreateToken(
-		user.ID,
+		sessionID,
 		server.config.RefreshTokenDuration,
 	)
 	if err != nil {
@@ -79,10 +83,7 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 
 	// store session in database (NOTE: could migrate to redis in the future)
 	session, err := server.store.CreateSession(ctx, db.CreateSessionParams{
-		ID: pgtype.UUID{
-			Bytes: uuid.New(),
-			Valid: true,
-		},
+		ID:           sessionID,
 		UserID:       user.ID,
 		RefreshToken: refreshToken,
 		UserAgent:    ctx.Request.UserAgent(),
@@ -113,4 +114,62 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 func (server *Server) UserRegister(ctx *gin.Context) {
 	// TODO: email verification
 	server.CreateUser(ctx)
+}
+
+type RefreshAccessRequest struct {
+	SessionID    uuid.UUID `json:"session_id" binding:"required"`
+	RefreshToken string    `json:"refresh_token" binding:"required"`
+}
+
+type RefreshAccessResponse struct {
+	AccessToken string `json:"access_token"`
+}
+
+func (server *Server) RefreshAccess(ctx *gin.Context) {
+	// verify the request
+	var req RefreshAccessRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err)
+		return
+	}
+
+	// verify the refresh token
+	payload, err := server.tokenMaker.VerifyToken(req.RefreshToken)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err)
+
+		// token has been expired delete the session
+		err := server.store.DeleteSession(ctx, pgtype.UUID{
+			Bytes: req.SessionID,
+			Valid: true,
+		})
+		if err != nil {
+			server.WarnLogger.Println("Session is not deleted", err)
+		}
+		return
+	}
+
+	// get the session
+	session, err := server.store.GetSessionByID(ctx, payload.QueryID)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err)
+		return
+	}
+
+	// create new access token
+	accessToken, _, err := server.tokenMaker.CreateToken(
+		session.UserID,
+		server.config.AccessTokenDuration,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err)
+		return
+	}
+
+	// create response
+	ctx.JSON(http.StatusOK, RefreshAccessResponse{AccessToken: accessToken})
 }

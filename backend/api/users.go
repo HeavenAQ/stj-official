@@ -114,7 +114,7 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 
 func (server *Server) GetUser(ctx *gin.Context) {
 	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
-	user, err := server.store.GetUserById(ctx, authPayload.UserID)
+	user, err := server.store.GetUserById(ctx, authPayload.QueryID)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
 		server.ErrorLogger.Println(err)
@@ -148,7 +148,7 @@ func (server *Server) UpdateUser(ctx *gin.Context) {
 	}
 
 	// get user id from access token
-	userId := ctx.MustGet(authorizationPayloadKey).(*token.Payload).UserID
+	userId := ctx.MustGet(authorizationPayloadKey).(*token.Payload).QueryID
 	oldUser, err := server.store.GetUserById(ctx, userId)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})

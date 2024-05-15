@@ -4,10 +4,14 @@ INSERT INTO sessions (id, user_id, refresh_token, user_agent, client_ip, is_bloc
 RETURNING
     *;
 
--- name: GetSessionById :one
+-- name: GetSessionByID :one
 SELECT
     *
 FROM
     sessions
 WHERE
     id = $1;
+
+-- name: DeleteSession :exec
+DELETE FROM sessions
+WHERE id = $1;

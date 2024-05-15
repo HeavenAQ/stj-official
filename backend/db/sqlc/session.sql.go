@@ -52,7 +52,17 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 	return i, err
 }
 
-const getSessionById = `-- name: GetSessionById :one
+const deleteSession = `-- name: DeleteSession :exec
+DELETE FROM sessions
+WHERE id = $1
+`
+
+func (q *Queries) DeleteSession(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteSession, id)
+	return err
+}
+
+const getSessionByID = `-- name: GetSessionByID :one
 SELECT
     id, user_id, refresh_token, user_agent, client_ip, is_blocked, expires_at, created_at
 FROM
@@ -61,8 +71,8 @@ WHERE
     id = $1
 `
 
-func (q *Queries) GetSessionById(ctx context.Context, id pgtype.UUID) (Session, error) {
-	row := q.db.QueryRow(ctx, getSessionById, id)
+func (q *Queries) GetSessionByID(ctx context.Context, id pgtype.UUID) (Session, error) {
+	row := q.db.QueryRow(ctx, getSessionByID, id)
 	var i Session
 	err := row.Scan(
 		&i.ID,

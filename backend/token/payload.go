@@ -9,7 +9,7 @@ import (
 )
 
 type Payload struct {
-	UserID pgtype.UUID `json:"user_id"`
+	QueryID pgtype.UUID `json:"user_id"`
 	jwt.RegisteredClaims
 }
 
