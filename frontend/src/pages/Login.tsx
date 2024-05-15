@@ -23,6 +23,8 @@ const useLoginMutation = () => {
       toast.success('登入成功')
       queryClient.setQueryData(['user'], () => ({ data: res.data.user }))
       sessionStorage.setItem('access_token', res.data.access_token)
+      sessionStorage.setItem('refresh_token', res.data.refresh_token)
+      sessionStorage.setItem('session_id', res.data.session_id)
       navigate('/')
     },
     onError: error => {

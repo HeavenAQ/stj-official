@@ -3,7 +3,7 @@ import { redirect } from 'react-router-dom'
 import { updateUser, UserData } from '../api/user'
 import PhoneInput from 'react-phone-number-input'
 import Loading from '../components/Loading'
-import { Map, Marker, useApiIsLoaded } from '@vis.gl/react-google-maps'
+import { Map, Marker } from '@vis.gl/react-google-maps'
 import { PlaceAutocomplete } from '../components/PlaceAutocomplete'
 import MapHandler from '../components/MapHandler'
 import { Gender } from '../types'
@@ -37,6 +37,9 @@ const useUpdateUserMutation = (queryClient: QueryClient) => {
         } else if (err.response?.data.error === 'line id already exists') {
           toast.error('此LINE ID已被註冊')
         }
+      } else if (err.response?.status === HttpStatusCode.Unauthorized) {
+        toast.error('請先登入')
+        redirect('/login')
       } else {
         toast.error('更新失敗，請再試一次')
       }
@@ -111,7 +114,6 @@ const UserInfo = () => {
     setSpinner(true)
 
     // update user data
-    console.log(selectedPlace?.geometry?.location?.lat())
     const address = selectedPlace?.formatted_address || backupAddress
     const data: UserData = {
       first_name: firstName,
