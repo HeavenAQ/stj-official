@@ -11,6 +11,7 @@ import PasswordReset from './pages/PasswordReset'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import UserInfo from './pages/UserInfo'
 import { APIProvider } from '@vis.gl/react-google-maps'
+import MainLayout from './layout/MainLayout'
 
 // google map api
 const googleMapAPIKey = process.env.REACT_APP_GOOGLE_MAP_API_KEY as string
@@ -48,19 +49,19 @@ export default function App() {
             }
           }}
         />
-        <Navbar />
-        <APIProvider apiKey={googleMapAPIKey} language="zh-TW">
-          <Routes>
-            <Route index element={<Home />} />
-            <Route path="items" element={<Sake />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
-            <Route path="password-reset" element={<PasswordReset />} />
-            <Route path="user" element={<UserInfo />} />
-            <Route path="*" element={<Page404 />} />
-          </Routes>
-        </APIProvider>
-        <Footer />
+        <MainLayout>
+          <APIProvider apiKey={googleMapAPIKey} language="zh-TW">
+            <Routes>
+              <Route index element={<Home />} />
+              <Route path="items" element={<Sake />} />
+              <Route path="login" element={<Login />} />
+              <Route path="register" element={<Register />} />
+              <Route path="password-reset" element={<PasswordReset />} />
+              <Route path="user" element={<UserInfo />} />
+              <Route path="*" element={<Page404 />} />
+            </Routes>
+          </APIProvider>
+        </MainLayout>
       </BrowserRouter>
     </QueryClientProvider>
   )
