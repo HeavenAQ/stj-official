@@ -15,16 +15,21 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <>
       <Navbar />
-      <div className="inline-flex mt-20 ml-[50%] -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] h-16 max-w-[1000px] items-center space-x-1">
+      <div
+        className={`inline-flex mt-20 ml-[50%] -translate-x-1/2 w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] h-16 max-w-[1000px] items-center ${location.pathname === '/' ? 'hidden' : ''}`}
+      >
         {location.pathname !== '/' &&
           locationPath.map((path, i) => {
             const pathKey = path as keyof typeof pathnameMap
             return (
               <div
                 key={i}
-                className="inline-flex justify-center items-center space-x-1 h-10 text-gray-500 text-md"
+                className="inline-flex justify-center items-center h-10 text-gray-500 text-md"
               >
-                <a className="text-sky-600" href={`/${path}`}>
+                <a
+                  className="px-3 rounded-lg duration-300 hover:text-gray-700 hover:bg-gray-200 text-sky-600"
+                  href={`/${path}`}
+                >
                   {pathnameMap[pathKey]}
                 </a>
                 {i !== locationPath.length - 1 && (

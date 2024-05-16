@@ -138,18 +138,24 @@ export const sakes = {
     const sakeDescriptions = chnSakeDescriptions
     const sakeSubtitles = chnSakeSubtitles
     const id = ['yukikura', 'dennyu', 'hatsuume', 'takanoi', 'ginjo', 'gatao']
-    return sakeTitles.map((title, idx) => ({
-      title,
-      subtitle: sakeSubtitles[idx],
-      id: id[idx],
-      description: sakeDescriptions[idx],
-      images: [serviceImages[idx]]
-    }))
+    const isHot = [false, true, false, false, false, true]
+    return sakeTitles.map(
+      (title, idx) =>
+        ({
+          title,
+          subtitle: sakeSubtitles[idx],
+          isHot: isHot[idx],
+          id: id[idx],
+          description: sakeDescriptions[idx],
+          images: [serviceImages[idx]]
+        }) as SakeInfo
+    )
   }
 }
 
 export interface SakeInfo {
   title: string
+  isHot: boolean
   subtitle?: string
   id: string
   description: SakeDescription
