@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import 'react-phone-number-input/style.css'
 import { redirect } from 'react-router-dom'
 import { updateUser, UserData } from '../api/user'
 import PhoneInput from 'react-phone-number-input'
@@ -133,7 +134,7 @@ const UserInfo = () => {
   }
 
   return (
-    <section className=" bg-zinc-600 rounded-xl w-[90%] sm:w-[80%] md:w-[75%] lg:w-[60%] max-w-[1000px]  mx-auto md:px-0 px-6 shadow-xl shadow-gray-500 mb-32 pb-9 animate-fade">
+    <section className=" bg-zinc-600 rounded-xl mx-auto md:px-0 px-6 shadow-xl shadow-gray-500 mb-32 pb-9 animate-fade">
       <div className="pt-10 mx-auto w-full md:w-4/5 max-w-[1000px]">
         <h1 className="my-8 text-3xl text-center text-white lg:mb-12 lg:text-3xl tracking-[20px]">
           會員資料
@@ -227,7 +228,6 @@ const UserInfo = () => {
             <label className="font-medium text-slate-200">電話</label>
             <PhoneInput
               className="block py-3 px-4 mb-3 w-full leading-tight bg-white rounded border appearance-none"
-              placeholder="請輸入電話號碼"
               defaultCountry="TW"
               value={phone}
               onChange={ev => setPhone(ev)}

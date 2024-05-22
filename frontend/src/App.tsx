@@ -5,8 +5,6 @@ import Sake from './pages/SakePage'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import { Toaster } from 'react-hot-toast'
-import Footer from './components/Footer'
-import Navbar from './components/Navbar'
 import PasswordReset from './pages/PasswordReset'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import UserInfo from './pages/UserInfo'
@@ -58,6 +56,7 @@ export default function App() {
               <Route path="register" element={<Register />} />
               <Route path="password-reset" element={<PasswordReset />} />
               <Route path="user" element={<UserInfo />} />
+              <Route path="sakes/:sakeId" element={<Sake />} />
               <Route path="*" element={<Page404 />} />
             </Routes>
           </APIProvider>

@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react'
 import { sakes, SakeInfo, SakeDescription } from '../data/sakes'
+import { useParams } from 'react-router-dom'
 import Markdown from 'react-markdown'
-import ContactUs from '../components/ContactUs'
 
 interface SakeDescriptionProps {
   description: SakeDescription
@@ -130,28 +130,21 @@ const SakeCard: FC<SakeCardProps> = ({ sake }) => {
   )
 }
 
+const sakeInfos = sakes.getSakeInfoList()
 const Sake: FC = () => {
-  const sakeInfo = sakes.getSakeInfoList()
+  const { sakeId } = useParams()
+  const sakeIdNum = Number(sakeId as string)
 
   return (
-    <div className="px-4 mx-auto w-full sm:px-8 md:overflow-scroll md:px-14 max-w-[1000px] md:h-[100vh] md:snap-y md:snap-mandatory md:scroll-smooth">
-      {sakeInfo.map(sake => (
-        <div
-          key={sake.title}
-          id={sake.title}
-          className="pt-8 pb-16 lg:items-center lg:pt-20 lg:pb-0 md:h-[100vh] md:snap-start"
-        >
-          <SakeCard sake={sake} />
-        </div>
-      ))}
+    <div className="px-4 mx-auto w-full sm:px-8 md:px-14 max-w-[1000px] animate-fade-down">
       <div
-        id="contact_us"
-        className="pt-8 pb-16 rounded-lg lg:items-center lg:pt-20 lg:pb-0 md:h-[100vh] md:snap-start"
+        key={sakeInfos[sakeIdNum].title}
+        id={sakeInfos[sakeIdNum].title}
+        className="pt-8 pb-16 lg:items-center lg:pt-20 lg:pb-0"
       >
-        <ContactUs />
+        <SakeCard sake={sakeInfos[sakeIdNum]} />
       </div>
     </div>
   )
 }
-
 export default Sake
