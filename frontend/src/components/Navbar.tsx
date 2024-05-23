@@ -37,7 +37,9 @@ export default function Navbar() {
             alt="logo"
           />
         </a>
-        <HiOutlineShoppingCart className="text-3xl font-thin text-zinc-900" />
+        <a href="/order">
+          <HiOutlineShoppingCart className="text-3xl font-thin text-zinc-900" />
+        </a>
       </div>
     </div>
   )

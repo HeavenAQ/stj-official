@@ -10,6 +10,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import UserInfo from './pages/UserInfo'
 import { APIProvider } from '@vis.gl/react-google-maps'
 import MainLayout from './layout/MainLayout'
+import OrderPage from './pages/OrderPage'
 
 // google map api
 const googleMapAPIKey = process.env.REACT_APP_GOOGLE_MAP_API_KEY as string
@@ -56,6 +57,7 @@ export default function App() {
               <Route path="register" element={<Register />} />
               <Route path="password-reset" element={<PasswordReset />} />
               <Route path="user" element={<UserInfo />} />
+              <Route path="order" element={<OrderPage />} />
               <Route path="sakes/:sakeId" element={<Sake />} />
               <Route path="*" element={<Page404 />} />
             </Routes>

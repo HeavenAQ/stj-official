@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { toast } from 'react-hot-toast'
 import FormLayout from '../layout/Form'
 
 export default function PasswordReset() {
-  const [email, setEmail] = useState<string>('')
+  const [, setEmail] = useState<string>('')
 
   const registerUser = (e: React.FormEvent) => {
     e.preventDefault()

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import 'react-phone-number-input/style.css'
 import { redirect } from 'react-router-dom'
 import { updateUser, UserData } from '../api/user'
@@ -92,16 +92,20 @@ const UserInfo = () => {
         lng: user?.data.longitude || defaultPosition.lng
       })
     }
-  }, [user])
+  }, [defaultPosition.lat, defaultPosition.lng, user])
 
   // if selectedPlace is changed, update marker position
-  useMemo(() => {
+  useEffect(() => {
     const newPosition = {
       lat: selectedPlace?.geometry?.location?.lat() || defaultPosition.lat,
       lng: selectedPlace?.geometry?.location?.lng() || defaultPosition.lng
     }
     setMarkerPosition(newPosition)
-  }, [selectedPlace])
+  }, [
+    defaultPosition.lat,
+    defaultPosition.lng,
+    selectedPlace?.geometry?.location
+  ])
 
   // submit form
   // mutate user data

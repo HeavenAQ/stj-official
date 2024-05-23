@@ -36,7 +36,7 @@ export const PlaceAutocomplete = ({
         placeAutocomplete.getPlace().formatted_address || backupAddress
       )
     })
-  }, [onPlaceSelect, placeAutocomplete])
+  }, [backupAddress, onPlaceSelect, placeAutocomplete, setBackupAddress])
 
   return (
     <input
