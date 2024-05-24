@@ -5,7 +5,7 @@ const Home: React.FC = () => {
   const allSakes = sakes.getSakeInfoList()
   return (
     <main className="px-3 mx-auto mt-28 h-full font-noto-serif animate-fade-down ">
-      <header className="mb-14 w-full rounded-lg shadow-lg h-[300px] shadow-gray-500 md:h-[550px]">
+      <header className="mb-14 w-full rounded-lg shadow-lg h-[350px] shadow-gray-500 md:h-[600px]">
         <img
           className="object-cover w-full h-full rounded-lg"
           src="/images/misc/Hero.webp"

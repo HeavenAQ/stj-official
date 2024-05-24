@@ -5,7 +5,7 @@ import { toast } from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { loginUser } from '../api/user'
 import Loading from '../components/Loading'
-import FormLayout from '../layout/Form'
+import FormLayout from '../layout/FormLayout'
 
 interface LoginParams {
   email: string

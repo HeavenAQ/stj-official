@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import FormLayout from '../layout/Form'
+import FormLayout from '../layout/FormLayout'
 
 export default function PasswordReset() {
   const [, setEmail] = useState<string>('')

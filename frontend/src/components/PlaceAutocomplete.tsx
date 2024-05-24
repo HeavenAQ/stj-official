@@ -1,9 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { useMapsLibrary } from '@vis.gl/react-google-maps'
 
 interface Props {
   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void
-  setBackupAddress: React.Dispatch<React.SetStateAction<string>>
+  setBackupAddress: (address: string) => void
   backupAddress: string
 }
 

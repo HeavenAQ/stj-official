@@ -4,24 +4,14 @@ import { redirect } from 'react-router-dom'
 import { updateUser, UserData } from '../api/user'
 import PhoneInput from 'react-phone-number-input'
 import Loading from '../components/Loading'
-import { Map, Marker } from '@vis.gl/react-google-maps'
-import { PlaceAutocomplete } from '../components/PlaceAutocomplete'
-import MapHandler from '../components/MapHandler'
 import { Gender } from '../types'
 import { useUserQuery } from '../utils/query'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-hot-toast'
 import { AxiosError, HttpStatusCode } from 'axios'
-
-const YearOptions = () => {
-  const currentYear = new Date().getFullYear()
-  const years = Array.from({ length: 82 }, (_, i) => currentYear - i - 18)
-  return years.map(year => (
-    <option key={year} value={year}>
-      {year}
-    </option>
-  ))
-}
+import { YearOptions } from '../utils/options'
+import useGoogleMap from '../utils/hooks'
+import GoogleMapInput from '../components/GoogleMapInput'
 
 const useUpdateUserMutation = (queryClient: QueryClient) => {
   return useMutation({
@@ -68,13 +58,17 @@ const UserInfo = () => {
   const [birthYear, setBirthYear] = useState<number>(0)
   const [lineID, setLineID] = useState<string>('')
   const [spinner, setSpinner] = useState<boolean>(false)
-  const [backupAddress, setBackupAddress] = useState<string>('') // in case user does not select address
 
   // google map
   let defaultPosition = { lat: 25.033964, lng: 121.564472 }
-  const [markerPosition, setMarkerPosition] = useState(defaultPosition)
-  const [selectedPlace, setSelectedPlace] =
-    useState<google.maps.places.PlaceResult | null>(null)
+  const {
+    backupAddress,
+    setBackupAddress,
+    markerPosition,
+    selectedPlace,
+    setMarkerPosition,
+    setSelectedPlace
+  } = useGoogleMap(defaultPosition.lat, defaultPosition.lng)
 
   // initialize form data if user data is fetched
   useEffect(() => {
@@ -92,19 +86,12 @@ const UserInfo = () => {
         lng: user?.data.longitude || defaultPosition.lng
       })
     }
-  }, [defaultPosition.lat, defaultPosition.lng, user])
-
-  // if selectedPlace is changed, update marker position
-  useEffect(() => {
-    const newPosition = {
-      lat: selectedPlace?.geometry?.location?.lat() || defaultPosition.lat,
-      lng: selectedPlace?.geometry?.location?.lng() || defaultPosition.lng
-    }
-    setMarkerPosition(newPosition)
   }, [
     defaultPosition.lat,
     defaultPosition.lng,
-    selectedPlace?.geometry?.location
+    user,
+    setMarkerPosition,
+    setBackupAddress
   ])
 
   // submit form
@@ -201,7 +188,7 @@ const UserInfo = () => {
                 required
               >
                 <option value={0}></option>
-                {YearOptions()}
+                <YearOptions />
               </select>
             </div>
           </div>
@@ -237,24 +224,13 @@ const UserInfo = () => {
               onChange={ev => setPhone(ev)}
             />
           </div>
-          <div className="flex flex-wrap px-3 -mx-3 mb-8 space-y-2">
-            <label className="font-medium text-slate-200">地址（寄貨用）</label>
-            <PlaceAutocomplete
-              onPlaceSelect={setSelectedPlace}
-              setBackupAddress={setBackupAddress}
-              backupAddress={backupAddress}
-            />
-          </div>
-          <div className="flex flex-wrap px-3 -mx-3 mb-6 rounded-lg">
-            <Map
-              defaultCenter={markerPosition}
-              defaultZoom={15}
-              className="overflow-hidden w-full rounded-lg h-[400px]"
-            >
-              <Marker position={markerPosition} />
-            </Map>
-            <MapHandler place={selectedPlace} />
-          </div>
+          <GoogleMapInput
+            backupAddress={backupAddress}
+            setBackupAddress={setBackupAddress}
+            markerPosition={markerPosition}
+            selectedPlace={selectedPlace}
+            setSelectedPlace={setSelectedPlace}
+          />
           <div className="flex flex-wrap -mx-3">
             <div className="flex justify-center items-end w-full h-auto text-white">
               <button
@@ -276,5 +252,4 @@ const UserInfo = () => {
     </section>
   )
 }
-
 export default UserInfo

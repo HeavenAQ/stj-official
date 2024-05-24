@@ -1,5 +1,6 @@
 import { SakeInfo } from '../data/sakes'
 import React, { useState } from 'react'
+import { useCart } from '../contexts/CartContext'
 
 interface ItemCardProps {
   item: SakeInfo
@@ -8,6 +9,7 @@ interface ItemCardProps {
 
 const ItemCard: React.FC<ItemCardProps> = ({ item, href }) => {
   const [quantity, setQuantity] = useState(0)
+  const cartContext = useCart()
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       entry.isIntersecting
@@ -15,6 +17,12 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, href }) => {
         : entry.target.classList.remove('animate-fade-up')
     })
   })
+
+  const onClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    cartContext?.addToCart({ product: item, quantity })
+  }
+
   return (
     <div
       className="relative mx-auto w-full max-w-sm bg-white rounded-lg border border-gray-200 shadow-md duration-300 dark:bg-gray-800 dark:border-gray-700"
@@ -59,12 +67,12 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, href }) => {
       </div>
       <div className="px-5 pb-5 mx-auto w-44">
         <div className="flex justify-center items-center">
-          <a
-            href="/"
+          <button
             className="py-2.5 px-5 text-sm font-medium text-center text-white rounded-lg duration-300 focus:ring-4 focus:outline-none bg-zinc-700 dark:bg-zinc-600 dark:hover:bg-zinc-400 dark:focus:ring-zinc-800 hover:bg-zinc-500 focus:ring-zinc-300"
+            onClick={onClick}
           >
             加入詢價單
-          </a>
+          </button>
         </div>
       </div>
     </div>
