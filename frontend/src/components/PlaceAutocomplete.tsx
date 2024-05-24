@@ -40,11 +40,13 @@ export const PlaceAutocomplete = ({
 
   return (
     <input
+      id="address"
       className="block py-3 px-4 mb-3 w-full leading-tight rounded border appearance-none"
       ref={inputRef}
       placeholder="請輸入地址"
       onChange={ev => setBackupAddress(ev.target.value)}
       value={backupAddress}
+      autoComplete="address-line1"
     />
   )
 }

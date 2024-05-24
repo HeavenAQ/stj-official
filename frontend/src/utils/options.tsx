@@ -11,3 +11,15 @@ export const YearOptions = () => {
     </>
   )
 }
+
+export const QuantityOptions = () => {
+  return (
+    <>
+      {Array.from({ length: 99 }, (_, i) => i + 1).map(i => (
+        <option key={i} value={i}>
+          {i}
+        </option>
+      ))}
+    </>
+  )
+}

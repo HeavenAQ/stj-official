@@ -10,7 +10,7 @@ import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-hot-toast'
 import { AxiosError, HttpStatusCode } from 'axios'
 import { YearOptions } from '../utils/options'
-import useGoogleMap from '../utils/hooks'
+import { useGoogleMap } from '../utils/hooks'
 import GoogleMapInput from '../components/GoogleMapInput'
 
 const useUpdateUserMutation = (queryClient: QueryClient) => {
@@ -127,7 +127,7 @@ const UserInfo = () => {
   return (
     <section className=" bg-zinc-600 rounded-xl mx-auto md:px-0 px-6 shadow-xl shadow-gray-500 mb-32 pb-9 animate-fade">
       <div className="pt-10 mx-auto w-full md:w-4/5 max-w-[1000px]">
-        <h1 className="my-8 text-3xl text-center text-white lg:mb-12 lg:text-3xl tracking-[20px]">
+        <h1 className="my-8 text-3xl text-center text-white lg:mb-12 lg:text-3xl tracking-[20px] font-bold">
           會員資料
         </h1>
         {spinner && (
@@ -144,8 +144,8 @@ const UserInfo = () => {
                 id="grid-last-name"
                 type="text"
                 placeholder="姓氏"
-                onChange={ev => setFirstName(ev.target.value)}
-                value={firstName}
+                onChange={ev => setLastName(ev.target.value)}
+                value={lastName}
                 required
               />
             </div>
@@ -156,8 +156,8 @@ const UserInfo = () => {
                 id="grid-first-name"
                 type="text"
                 placeholder="名字"
-                onChange={ev => setLastName(ev.target.value)}
-                value={lastName}
+                onChange={ev => setFirstName(ev.target.value)}
+                value={firstName}
                 required
               />
             </div>
