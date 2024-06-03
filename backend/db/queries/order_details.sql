@@ -12,7 +12,7 @@ FROM
 WHERE
     pk = $1;
 
--- name: GetOrderDetailsByOrder :many
+-- name: GetOrderDetailByOrder :many
 SELECT
     *
 FROM

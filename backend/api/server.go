@@ -17,13 +17,13 @@ import (
 )
 
 type Server struct {
-	config      utils.Config
+	tokenMaker  token.Maker
 	store       *db.Store
 	router      *gin.Engine
-	tokenMaker  token.Maker
 	ErrorLogger *log.Logger
 	InforLogger *log.Logger
 	WarnLogger  *log.Logger
+	config      utils.Config
 }
 
 func (server *Server) Start() error {

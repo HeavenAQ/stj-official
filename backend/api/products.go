@@ -66,9 +66,9 @@ type CreateProductRequest struct {
 	ChnName        string
 	JpCategory     string
 	ChnCategory    string
-	Price          int64
 	StockStatus    db.ProductStatus
-	quantity       int64
 	jpDescription  string
 	chnDescription string
+	Price          int64
+	quantity       int64
 }

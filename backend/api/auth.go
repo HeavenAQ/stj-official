@@ -17,12 +17,12 @@ type loginRequest struct {
 }
 
 type loginResponse struct {
-	SessionID           uuid.UUID        `json:"session_id"`
 	AccessToken         string           `json:"access_token"`
 	RefreshToken        string           `json:"refresh_token"`
+	User                UserInfoResponse `json:"user"`
 	AccessTokenExpires  int64            `json:"access_token_expires"`
 	RefreshTokenExpires int64            `json:"refresh_token_expires"`
-	User                UserInfoResponse `json:"user"`
+	SessionID           uuid.UUID        `json:"session_id"`
 }
 
 func (server *Server) UserLogin(ctx *gin.Context) {
@@ -105,8 +105,8 @@ func (server *Server) UserLogin(ctx *gin.Context) {
 		SessionID:           session.ID.Bytes,
 		AccessToken:         accessToken,
 		RefreshToken:        session.RefreshToken,
-		AccessTokenExpires:  payload.ExpiresAt.Time.Unix(),
-		RefreshTokenExpires: payload.ExpiresAt.Time.Unix(),
+		AccessTokenExpires:  payload.ExpiresAt.Unix(),
+		RefreshTokenExpires: payload.ExpiresAt.Unix(),
 		User:                server.userResponse(user),
 	})
 }
@@ -117,8 +117,8 @@ func (server *Server) UserRegister(ctx *gin.Context) {
 }
 
 type RefreshAccessRequest struct {
-	SessionID    uuid.UUID `json:"session_id" binding:"required"`
 	RefreshToken string    `json:"refresh_token" binding:"required"`
+	SessionID    uuid.UUID `json:"session_id" binding:"required"`
 }
 
 type RefreshAccessResponse struct {

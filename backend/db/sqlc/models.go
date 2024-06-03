@@ -193,6 +193,8 @@ type Order struct {
 	IsPaid          bool               `json:"is_paid"`
 	TotalPrice      int32              `json:"total_price"`
 	ShippingAddress string             `json:"shipping_address"`
+	Email           string             `json:"email"`
+	Phone           string             `json:"phone"`
 	ShippingDate    pgtype.Timestamptz `json:"shipping_date"`
 	DeliveredDate   pgtype.Timestamptz `json:"delivered_date"`
 	CreatedAt       pgtype.Timestamptz `json:"created_at"`

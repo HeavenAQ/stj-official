@@ -30,7 +30,7 @@ FROM
 WHERE
     phone = $1;
 
--- name: GetUserById :one
+-- name: GetUserByID :one
 SELECT
     *
 FROM

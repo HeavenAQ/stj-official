@@ -81,6 +81,8 @@ CREATE TABLE "orders" (
     "is_paid" boolean NOT NULL DEFAULT FALSE,
     "total_price" int NOT NULL DEFAULT 0,
     "shipping_address" text NOT NULL,
+    "email" text NOT NULL,
+    "phone" text NOT NULL,
     "shipping_date" timestamptz,
     "delivered_date" timestamptz,
     "created_at" timestamptz NOT NULL DEFAULT now(),

@@ -75,3 +75,11 @@ FROM
 WHERE
     quantity >= $1
     AND quantity <= $2;
+
+-- name: GetProductByID :one
+SELECT
+    *
+FROM
+    products
+WHERE
+    id = $1;

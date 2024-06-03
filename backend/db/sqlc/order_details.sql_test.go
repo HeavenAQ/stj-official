@@ -76,7 +76,7 @@ func TestQueries_GetOrderDetailsByOrder(t *testing.T) {
 	}
 
 	// get order details by order and check for errors
-	orderDetails, err := testQueries.GetOrderDetailsByOrder(context.Background(), order.Pk)
+	orderDetails, err := testQueries.GetOrderDetailByOrder(context.Background(), order.Pk)
 	require.NoError(t, err)
 	require.Len(t, orderDetails, n)
 

@@ -17,6 +17,8 @@ func createRandomOrder(t *testing.T) Order {
 		Status:          OrderStatusPending,
 		TotalPrice:      100,
 		ShippingAddress: utils.RandomAlphabetString(10),
+		Email:           utils.RandomAlphabetString(10),
+		Phone:           utils.RandomAlphabetString(10),
 		ShippingDate:    pgtype.Timestamptz{Time: time.Now(), Valid: true},
 		DeliveredDate:   pgtype.Timestamptz{Time: time.Now(), Valid: true},
 	}
@@ -30,6 +32,8 @@ func createRandomOrderWithUser(t *testing.T, user User) Order {
 		Status:          OrderStatusPending,
 		TotalPrice:      100,
 		ShippingAddress: utils.RandomAlphabetString(10),
+		Email:           utils.RandomAlphabetString(10),
+		Phone:           utils.RandomAlphabetString(10),
 		ShippingDate:    pgtype.Timestamptz{Time: time.Now(), Valid: true},
 		DeliveredDate:   pgtype.Timestamptz{Time: time.Now(), Valid: true},
 	}
@@ -48,6 +52,8 @@ func createOrderWithArgs(t *testing.T, order Order, args CreateOrderParams) Orde
 	require.Equal(t, args.Status, order.Status)
 	require.Equal(t, args.TotalPrice, order.TotalPrice)
 	require.Equal(t, args.ShippingAddress, order.ShippingAddress)
+	require.Equal(t, args.Email, order.Email)
+	require.Equal(t, args.Phone, order.Phone)
 	require.WithinDuration(t, args.ShippingDate.Time, order.ShippingDate.Time, time.Second*3)
 	require.WithinDuration(t, args.DeliveredDate.Time, order.DeliveredDate.Time, time.Second*3)
 	require.NotZero(t, order.CreatedAt)
@@ -63,6 +69,8 @@ func checkSameOrder(t *testing.T, order1, order2 Order) {
 	require.Equal(t, order1.IsPaid, order2.IsPaid)
 	require.Equal(t, order1.TotalPrice, order2.TotalPrice)
 	require.Equal(t, order1.ShippingAddress, order2.ShippingAddress)
+	require.Equal(t, order1.Email, order2.Email)
+	require.Equal(t, order1.Phone, order2.Phone)
 	require.WithinDuration(t, order1.ShippingDate.Time, order2.ShippingDate.Time, 0)
 	require.WithinDuration(t, order1.DeliveredDate.Time, order2.DeliveredDate.Time, 0)
 	require.WithinDuration(t, order1.CreatedAt.Time, order2.CreatedAt.Time, 0)
@@ -113,8 +121,8 @@ func TestQueries_GetOrderByUser(t *testing.T) {
 		testQueries.DeleteOrder(context.Background(), order.Pk)
 	}
 }
-func TestQueries_ListOrders(t *testing.T) {
 
+func TestQueries_ListOrders(t *testing.T) {
 	// create 10 random orders
 	orders := make([]Order, 10)
 	for i := 0; i < 10; i++ {
@@ -141,6 +149,72 @@ func TestQueries_ListOrders(t *testing.T) {
 	}
 }
 
+func TestQueries_ListOrdersByUser(t *testing.T) {
+	user := createRandomUser(t)
+	orders := make([]Order, 10)
+	for i := 0; i < 10; i++ {
+		orders[i] = createRandomOrderWithUser(t, user)
+	}
+
+	// list orders
+	args := ListOrdersByUserParams{
+		UserPk: user.Pk,
+		Limit:  10,
+		Offset: 0,
+	}
+	listedOrders, err := testQueries.ListOrdersByUser(context.Background(), args)
+	require.NoError(t, err)
+	require.NotEmpty(t, listedOrders)
+
+	// check the orders are not empty
+	for _, order := range listedOrders {
+		require.NotEmpty(t, order)
+	}
+
+	// check if user is the same
+	for _, order := range listedOrders {
+		require.Equal(t, user.Pk, order.UserPk)
+	}
+
+	// clean up
+	testQueries.DeleteUser(context.Background(), user.Pk)
+	for _, order := range orders {
+		testQueries.DeleteOrder(context.Background(), order.Pk)
+	}
+}
+
+func TestQueries_ListOrdersByStatus(t *testing.T) {
+	orders := make([]Order, 10)
+	for i := 0; i < 10; i++ {
+		orders[i] = createRandomOrder(t)
+	}
+
+	// list orders
+	args := ListOrdersByStatusParams{
+		Status: OrderStatusPending,
+		Limit:  10,
+		Offset: 0,
+	}
+	listedOrders, err := testQueries.ListOrdersByStatus(context.Background(), args)
+	require.NoError(t, err)
+	require.NotEmpty(t, listedOrders)
+
+	// check the orders are not empty
+	for _, order := range listedOrders {
+		require.NotEmpty(t, order)
+	}
+
+	// check if status is the same
+	for _, order := range listedOrders {
+		require.Equal(t, OrderStatusPending, order.Status)
+	}
+
+	// clean up
+	for _, order := range orders {
+		testQueries.DeleteOrder(context.Background(), order.Pk)
+	}
+}
+
 // Update order
 func TestQueries_UpdateOrder(t *testing.T) {
 	user := createRandomUser(t)
@@ -151,6 +225,8 @@ func TestQueries_UpdateOrder(t *testing.T) {
 		Status:          OrderStatusDelivered,
 		TotalPrice:      int32(utils.RandomInt(100, 1000)),
 		ShippingAddress: utils.RandomAlphabetString(10),
+		Email:           utils.RandomAlphabetString(10),
+		Phone:           utils.RandomAlphabetString(10),
 		ShippingDate:    order1.ShippingDate,
 		DeliveredDate:   order1.DeliveredDate,
 		IsPaid:          true,
@@ -167,6 +243,8 @@ func TestQueries_UpdateOrder(t *testing.T) {
 	require.Equal(t, order2.IsPaid, true)
 	require.Equal(t, args.TotalPrice, order2.TotalPrice)
 	require.Equal(t, args.ShippingAddress, order2.ShippingAddress)
+	require.Equal(t, args.Email, order2.Email)
+	require.Equal(t, args.Phone, order2.Phone)
 	require.WithinDuration(t, order1.ShippingDate.Time, order2.ShippingDate.Time, 0)
 	require.WithinDuration(t, order1.DeliveredDate.Time, order2.DeliveredDate.Time, 0)
 	require.WithinDuration(t, order1.CreatedAt.Time, order2.CreatedAt.Time, 0)

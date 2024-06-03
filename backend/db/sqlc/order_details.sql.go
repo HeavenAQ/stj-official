@@ -79,7 +79,7 @@ func (q *Queries) GetOrderDetail(ctx context.Context, pk int64) (OrderDetail, er
 	return i, err
 }
 
-const getOrderDetailsByOrder = `-- name: GetOrderDetailsByOrder :many
+const getOrderDetailByOrder = `-- name: GetOrderDetailByOrder :many
 SELECT
     pk, order_pk, product_pk, quantity, price, discount, created_at, updated_at
 FROM
@@ -88,8 +88,8 @@ WHERE
     order_pk = $1
 `
 
-func (q *Queries) GetOrderDetailsByOrder(ctx context.Context, orderPk int64) ([]OrderDetail, error) {
-	rows, err := q.db.Query(ctx, getOrderDetailsByOrder, orderPk)
+func (q *Queries) GetOrderDetailByOrder(ctx context.Context, orderPk int64) ([]OrderDetail, error) {
+	rows, err := q.db.Query(ctx, getOrderDetailByOrder, orderPk)
 	if err != nil {
 		return nil, err
 	}

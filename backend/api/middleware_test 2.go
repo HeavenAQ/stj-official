@@ -30,9 +30,9 @@ func addAuthorization(
 
 func Test_AuthMiddleware(t *testing.T) {
 	testCases := []struct {
+		name          string
 		setupAuth     func(t *testing.T, request *http.Request, tokenMaker token.Maker)
 		checkResponse func(t *testing.T, recorder *httptest.ResponseRecorder)
-		name          string
 	}{
 		{
 			name: "ValidAuthorization",
@@ -59,6 +59,7 @@ func Test_AuthMiddleware(t *testing.T) {
 		{
 			name: "UnsupportedAuthorization",
 			setupAuth: func(t *testing.T, request *http.Request, tokenMaker token.Maker) {
+
 				userID := pgtype.UUID{
 					Bytes: uuid.New(),
 					Valid: true,

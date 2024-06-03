@@ -145,3 +145,27 @@ func TestQueries_DeleteProductAndInfo(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, product2Info, nilProductInfo)
 }
+
+func TestQueries_GetProductByID(t *testing.T) {
+	product := createRandomProduct(t)
+
+	// get the product and check for errors
+	product2, err := testQueries.GetProductByID(context.Background(), product.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, product2)
+
+	// check if the product is created correctly
+	require.Equal(t, product.Pk, product2.Pk)
+	require.Equal(t, product.ID, product2.ID)
+	require.Equal(t, product.Price, product2.Price)
+	require.Equal(t, product.ImageURLs, product2.ImageURLs)
+	require.Equal(t, product.Status, product2.Status)
+	require.Equal(t, product.Quantity, product2.Quantity)
+	require.WithinDuration(t, product.CreatedAt.Time, product2.CreatedAt.Time, 0)
+	require.WithinDuration(t, product.UpdatedAt.Time, product2.UpdatedAt.Time, 0)
+	require.NotZero(t, product2.CreatedAt)
+	require.NotZero(t, product2.UpdatedAt)
+
+	// clean up
+	testQueries.DeleteProduct(context.Background(), product.Pk)
+}

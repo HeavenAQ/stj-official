@@ -2,6 +2,7 @@
 ifeq ($(wildcard app.env),)
     $(info No .env file found, proceeding without it...)
 else
+    $(info .env file found, including it...)
     include app.env
 endif
 
