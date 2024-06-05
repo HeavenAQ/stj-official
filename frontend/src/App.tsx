@@ -14,7 +14,8 @@ import OrderPage from './pages/OrderPage'
 import { CartProvider } from './contexts/CartContext'
 
 // google map api
-const googleMapAPIKey = process.env.REACT_APP_GOOGLE_MAP_API_KEY as string
+const googleMapAPIKey = import.meta.env.VITE_GOOGLE_MAP_API_KEY as string
+console.log('googleMapAPIKey:', googleMapAPIKey)
 
 // react-query setting
 const queryClient = new QueryClient({

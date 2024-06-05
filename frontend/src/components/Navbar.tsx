@@ -6,6 +6,7 @@ import {
 } from 'react-icons/hi2'
 import { useCart } from '../contexts/CartContext'
 import { useUserQuery } from '../utils/query'
+import Logo from '/images/misc/Logo.svg'
 
 export default function Navbar() {
   const cartContext = useCart()
@@ -17,7 +18,6 @@ export default function Navbar() {
 
   useEffect(() => {
     setItemTotal(cartContext?.cart.length || 0)
-    console.log(itemTotal)
   }, [cartContext?.cart.length, itemTotal])
 
   return (
@@ -43,7 +43,7 @@ export default function Navbar() {
           <img
             className="absolute top-1/2 left-1/2 h-full -translate-x-1/2 -translate-y-1/2"
             alt="logo"
-            src="/images/misc/logo.svg"
+            src={Logo}
           />
         </a>
         <a href="/order">
