@@ -13,6 +13,10 @@ import { YearOptions } from '../utils/options'
 import { useGoogleMap } from '../utils/hooks'
 import GoogleMapInput from '../components/GoogleMapInput'
 
+// use default lat and lng for google map
+const lat = +import.meta.env.VITE_GOOGLE_MAP_DEFAULT_LAT
+const lng = +import.meta.env.VITE_GOOGLE_MAP_DEFAULT_LNG
+
 const useUpdateUserMutation = (queryClient: QueryClient) => {
   return useMutation({
     mutationFn: async (data: UserData) => {
@@ -60,7 +64,7 @@ const UserInfo = () => {
   const [spinner, setSpinner] = useState<boolean>(false)
 
   // google map
-  let defaultPosition = { lat: 25.033964, lng: 121.564472 }
+  const defaultPosition = { lat: lat, lng: lng }
   const {
     backupAddress,
     setBackupAddress,
@@ -218,7 +222,7 @@ const UserInfo = () => {
           <div className="flex flex-wrap px-3 -mx-3 mb-3 space-y-2">
             <label className="font-medium text-slate-200">電話</label>
             <PhoneInput
-              className="block py-3 px-4 mb-3 w-full leading-tight bg-white rounded border appearance-none"
+              className="py-3 px-4 mb-3 w-full leading-tight bg-white rounded border appearance-none"
               defaultCountry="TW"
               value={phone}
               onChange={ev => setPhone(ev)}

@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useUserQuery } from './query'
 
+// use default lat and lng for google map marker (+ convert them to number)
+const lat = +import.meta.env.VITE_GOOGLE_MAP_DEFAULT_LAT
+const lng = +import.meta.env.VITE_GOOGLE_MAP_DEFAULT_LNG
+
+// google map hook
 export const useGoogleMap = (defaultLat: number, defaultLng: number) => {
   const defaultPosition = useMemo(
     () => ({ lat: defaultLat, lng: defaultLng }),
@@ -85,21 +90,29 @@ export const useUserDeliveryInfo = () => {
     markerPosition,
     selectedPlace,
     setSelectedPlace
-  } = useGoogleMap(25.033964, 121.564472)
+  } = useGoogleMap(lat, lng)
 
-  // fill in user data is sameAsUser is checked
+  // fill in user data if sameAsUser is checked
   useEffect(() => {
     if (sameAsUser && user) {
       setFirstName(user.data.first_name)
       setLastName(user.data.last_name)
       setEmail(user.data.email)
       setPhone(user.data.phone)
-      setBirthYear(user.data.birth_year)
+      setBirthYear(user.data.birth_year || 0)
       setBackupAddress(user.data.address)
       setMarkerPosition({
-        lat: user.data.latitude,
-        lng: user.data.longitude
+        lat: user.data.latitude || lat,
+        lng: user.data.longitude || lng
       })
+    } else if (!sameAsUser) {
+      setFirstName('')
+      setLastName('')
+      setEmail('')
+      setPhone('')
+      setBirthYear(0)
+      setBackupAddress('')
+      setMarkerPosition({ lat, lng })
     }
   }, [sameAsUser, user, setBackupAddress, setMarkerPosition])
 

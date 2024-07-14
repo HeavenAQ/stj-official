@@ -1,44 +1,29 @@
--- Drop all triggers
-DROP TRIGGER IF EXISTS on_update_updated_at ON order_details;
+-- Drop triggers
+DROP TRIGGER IF EXISTS trg_update_last_login ON users;
+DROP TRIGGER IF EXISTS trg_update_products_timestamp ON products;
+DROP TRIGGER IF EXISTS trg_update_product_translations_timestamp ON product_translations;
+DROP TRIGGER IF EXISTS trg_update_users_timestamp ON users;
+DROP TRIGGER IF EXISTS trg_update_orders_timestamp ON orders;
+DROP TRIGGER IF EXISTS trg_update_order_details_timestamp ON order_details;
 
-DROP TRIGGER IF EXISTS on_update_updated_at ON orders;
+-- Drop functions
+DROP FUNCTION IF EXISTS update_last_login_timestamp();
+DROP FUNCTION IF EXISTS update_timestamp();
 
-DROP TRIGGER IF EXISTS on_update_updated_at ON users;
-
-DROP TRIGGER IF EXISTS on_update_updated_at ON product_translations;
-
-DROP TRIGGER IF EXISTS on_update_updated_at ON products;
-
-DROP TRIGGER IF EXISTS on_update_updated_at ON languages;
-
-DROP TRIGGER IF EXISTS on_update_last_login ON users;
-
--- Drop the function
-DROP FUNCTION IF EXISTS update_updated_at;
-
-DROP FUNCTION IF EXISTS update_last_login;
-
--- Drop all tables
+-- Drop tables
 DROP TABLE IF EXISTS order_details;
-
 DROP TABLE IF EXISTS orders;
-
 DROP TABLE IF EXISTS users;
-
+DROP TABLE IF EXISTS product_descriptions;
 DROP TABLE IF EXISTS product_translations;
-
 DROP TABLE IF EXISTS products;
 
-DROP TABLE IF EXISTS languages;
-
--- Drop all enum types
+-- Drop types
+DROP TYPE IF EXISTS gender;
 DROP TYPE IF EXISTS order_status;
-
 DROP TYPE IF EXISTS language_code;
-
 DROP TYPE IF EXISTS product_status;
 
-DROP TYPE IF EXISTS gender;
-
--- Drop the UUID extension
+-- Drop extension
 DROP EXTENSION IF EXISTS "uuid-ossp";
+

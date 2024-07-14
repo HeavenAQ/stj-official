@@ -136,7 +136,7 @@ const DeliveryInfo: FC<DeliveryInfoProps> = ({
             </label>
             <PhoneInput
               id="phone"
-              className="block py-3 px-4 mb-3 w-full leading-tight bg-white rounded border appearance-none"
+              className="py-3 px-4 mb-3 w-full leading-tight bg-white rounded border appearance-none"
               defaultCountry="TW"
               value={phone}
               onChange={ev => setPhone(ev)}

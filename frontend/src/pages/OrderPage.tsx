@@ -74,20 +74,31 @@ const OrderPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center mb-28 overflow-x-hidden animate-fade-down">
+    <div
+      className="w-full h-full flex flex-col items-center justify-center mb-28 overflow-x-hidden animate-fade-down"
+      onLoad={() =>
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
+      }
+    >
       <Stepper activeIdx={activeTab as 0 | 1 | 2} />
 
       <div
         className={`py-4 w-[300%] grid grid-cols-3 transition-transform duration-300 ease-in-out ${activeContentStyle(activeTab)}`}
       >
-        <div className="w-full text-center">
+        <div className="w-full text-center" id="check-order-step">
           <CheckOrderStep />
           <StepButton
             text="下一步"
             onClick={() => setActiveTab(prevTab => Math.min(prevTab + 1, 2))}
           />
         </div>
-        <div>
+        <div
+          id="delivery-info-step"
+          className={activeTab != 1 ? 'hidden' : undefined}
+        >
           <DeliveryInfoStep
             firstName={firstName}
             setFirstName={setFirstName}
@@ -128,7 +139,7 @@ const OrderPage: React.FC = () => {
             />
           </div>
         </div>
-        <div>
+        <div id="order-summary-step">
           <OrderSummaryStep
             firstName={firstName}
             lastName={lastName}
