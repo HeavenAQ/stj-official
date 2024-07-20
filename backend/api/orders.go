@@ -5,6 +5,7 @@ import (
 	"net/http"
 	db "stj-ecommerce/db/sqlc"
 	"stj-ecommerce/helpers"
+	"stj-ecommerce/token"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -110,7 +111,7 @@ func (server *Server) CreateOrder(ctx *gin.Context) {
 	items := make([]helpers.OrderItem, len(req.Items))
 	for i, item := range req.Items {
 		// ensure the product exists
-		product, err := server.store.GetProductByID(ctx, item.ID)
+		product, err := server.store.GetProductByID(ctx, item.ProductID)
 		if err != nil {
 			server.ErrorLogger.Println(err)
 			ctx.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("product %v not found", item.Name)})
@@ -118,13 +119,13 @@ func (server *Server) CreateOrder(ctx *gin.Context) {
 		}
 
 		// create order detail
-		arg := db.CreateOrderDetailParams{
+		arg := db.CreateOrderDetailsParams{
 			OrderPk:   order.Pk,
 			ProductPk: product.Pk,
 			Quantity:  item.Quantity,
 			Price:     0,
 		}
-		_, err = server.store.CreateOrderDetail(ctx, arg)
+		_, err = server.store.CreateOrderDetails(ctx, arg)
 		if err != nil {
 			server.ErrorLogger.Println(err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("failed to create order detail for product %v", item.Name)})
@@ -133,9 +134,9 @@ func (server *Server) CreateOrder(ctx *gin.Context) {
 
 		// add to order item
 		items[i] = helpers.OrderItem{
-			ID:       product.ID,
-			Name:     item.Name,
-			Quantity: item.Quantity,
+			ProductID: product.ID,
+			Name:      item.Name,
+			Quantity:  item.Quantity,
 		}
 	}
 
@@ -145,5 +146,55 @@ func (server *Server) CreateOrder(ctx *gin.Context) {
 		OrderStatus: order.Status,
 		CreatedAt:   order.CreatedAt,
 		Items:       items,
+	})
+}
+
+type GetOrderRequest struct {
+	OrderID pgtype.UUID `json:"order_id" binding:"required"`
+}
+
+func (server *Server) GetOrder(ctx *gin.Context) {
+	// get order id from uri
+	var req GetOrderRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err)
+		return
+	}
+
+	// get user
+	userID := ctx.MustGet(authorizationHeaderKey).(*token.Payload).QueryID
+	user, err := server.store.GetUserByID(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("Failed to get user info: %v", err.Error())})
+		server.ErrorLogger.Println(err.Error())
+		return
+	}
+
+	// get order by user and id
+	args := db.GetOrderByUserAndOrderIDParams{
+		UserPk: user.Pk,
+		ID:     req.OrderID,
+	}
+	order, err := server.store.GetOrderByUserAndOrderID(ctx, args)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err.Error())
+		return
+	}
+
+	// get order items
+	orderItems, err := helpers.GetOrderItemsFromDB(ctx, server.store, order.Pk, user.Language)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err.Error())
+		return
+	}
+
+	// send response
+	ctx.JSON(http.StatusOK, GetOrderResponse{
+		Status:    order.Status,
+		CreatedAt: order.CreatedAt,
+		Items:     orderItems,
 	})
 }

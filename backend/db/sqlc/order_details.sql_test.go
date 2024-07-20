@@ -8,29 +8,29 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomOrderDetail(t *testing.T) OrderDetail {
+func createRandomOrderDetails(t *testing.T) OrderDetail {
 	order := createRandomOrder(t)
 	product := createRandomProduct(t)
-	args := CreateOrderDetailParams{
+	args := CreateOrderDetailsParams{
 		OrderPk:   order.Pk,
 		ProductPk: product.Pk,
 		Quantity:  1,
 	}
-	return createOrderDetailWithArgs(t, args)
+	return createOrderDetailsWithArgs(t, args)
 }
 
-func createRandomOrderDetailWithOrder(t *testing.T, order Order) OrderDetail {
+func createRandomOrderDetailsWithOrder(t *testing.T, order Order) OrderDetail {
 	product := createRandomProduct(t)
-	args := CreateOrderDetailParams{
+	args := CreateOrderDetailsParams{
 		OrderPk:   order.Pk,
 		ProductPk: product.Pk,
 		Quantity:  int32(utils.RandomInt(1, 10)),
 	}
-	return createOrderDetailWithArgs(t, args)
+	return createOrderDetailsWithArgs(t, args)
 }
 
-func createOrderDetailWithArgs(t *testing.T, args CreateOrderDetailParams) OrderDetail {
-	orderDetail, err := testQueries.CreateOrderDetail(context.Background(), args)
+func createOrderDetailsWithArgs(t *testing.T, args CreateOrderDetailsParams) OrderDetail {
+	orderDetail, err := testQueries.CreateOrderDetails(context.Background(), args)
 	require.NoError(t, err)
 	require.NotEmpty(t, orderDetail)
 	require.NotZero(t, orderDetail.Pk)
@@ -41,16 +41,16 @@ func createOrderDetailWithArgs(t *testing.T, args CreateOrderDetailParams) Order
 }
 
 // order detail creation
-func TestQueries_CreateOrderDetail(t *testing.T) {
-	orderDetail := createRandomOrderDetail(t)
-	testQueries.DeleteOrderDetail(context.Background(), orderDetail.Pk)
+func TestQueries_CreateOrderDetails(t *testing.T) {
+	orderDetail := createRandomOrderDetails(t)
+	testQueries.DeleteOrderDetails(context.Background(), orderDetail.Pk)
 }
 
 // get order detail
-func TestQueries_GetOrderDetail(t *testing.T) {
+func TestQueries_GetOrderDetails(t *testing.T) {
 	// create an order detail and check for errors
-	orderDetail1 := createRandomOrderDetail(t)
-	orderDetail2, err := testQueries.GetOrderDetail(context.Background(), orderDetail1.Pk)
+	orderDetail1 := createRandomOrderDetails(t)
+	orderDetail2, err := testQueries.GetOrderDetails(context.Background(), orderDetail1.Pk)
 	require.NoError(t, err)
 	require.NotEmpty(t, orderDetail2)
 
@@ -63,20 +63,20 @@ func TestQueries_GetOrderDetail(t *testing.T) {
 	require.NotZero(t, orderDetail2.UpdatedAt)
 
 	// clean up
-	testQueries.DeleteOrderDetail(context.Background(), orderDetail1.Pk)
+	testQueries.DeleteOrderDetails(context.Background(), orderDetail1.Pk)
 }
 
-func TestQueries_GetOrderDetailsByOrder(t *testing.T) {
+func TestQueries_GetOrderDetailssByOrder(t *testing.T) {
 	// create an order detail and check for errors
 	n := 10
 	order := createRandomOrder(t)
 	orderDetails := make([]OrderDetail, n)
 	for i := 0; i < n; i++ {
-		orderDetails[i] = createRandomOrderDetailWithOrder(t, order)
+		orderDetails[i] = createRandomOrderDetailsWithOrder(t, order)
 	}
 
 	// get order details by order and check for errors
-	orderDetails, err := testQueries.GetOrderDetailByOrder(context.Background(), order.Pk)
+	orderDetails, err := testQueries.GetOrderDetailsByOrderPk(context.Background(), order.Pk)
 	require.NoError(t, err)
 	require.Len(t, orderDetails, n)
 
@@ -85,18 +85,18 @@ func TestQueries_GetOrderDetailsByOrder(t *testing.T) {
 		require.NotEmpty(t, orderDetail)
 		require.Equal(t, order.Pk, orderDetail.OrderPk)
 		// clean up
-		testQueries.DeleteOrderDetail(context.Background(), orderDetail.Pk)
+		testQueries.DeleteOrderDetails(context.Background(), orderDetail.Pk)
 		testQueries.DeleteProduct(context.Background(), orderDetail.ProductPk)
 	}
 }
 
 // update order detail
-func TestQueries_UpdateOrderDetail(t *testing.T) {
+func TestQueries_UpdateOrderDetails(t *testing.T) {
 	// create an order detail and check for errors
-	orderDetail1 := createRandomOrderDetail(t)
+	orderDetail1 := createRandomOrderDetails(t)
 	product := createRandomProduct(t)
 	order := createRandomOrder(t)
-	args := UpdateOrderDetailParams{
+	args := UpdateOrderDetailsParams{
 		Pk:        orderDetail1.Pk,
 		OrderPk:   order.Pk,
 		ProductPk: product.Pk,
@@ -104,7 +104,7 @@ func TestQueries_UpdateOrderDetail(t *testing.T) {
 	}
 
 	// update the order detail and check for errors
-	orderDetail2, err := testQueries.UpdateOrderDetail(context.Background(), args)
+	orderDetail2, err := testQueries.UpdateOrderDetails(context.Background(), args)
 	require.NoError(t, err)
 	require.NotEmpty(t, orderDetail2)
 
@@ -117,19 +117,19 @@ func TestQueries_UpdateOrderDetail(t *testing.T) {
 	require.NotEqual(t, orderDetail1.UpdatedAt.Time, orderDetail2.UpdatedAt.Time)
 
 	// clean up
-	testQueries.DeleteOrderDetail(context.Background(), orderDetail1.Pk)
+	testQueries.DeleteOrderDetails(context.Background(), orderDetail1.Pk)
 	testQueries.DeleteOrder(context.Background(), order.Pk)
 	testQueries.DeleteProduct(context.Background(), product.Pk)
 }
 
 // delete order detail
-func TestQueries_DeleteOrderDetail(t *testing.T) {
+func TestQueries_DeleteOrderDetails(t *testing.T) {
 	// delete order detail and check for errors
-	orderDetail := createRandomOrderDetail(t)
-	err := testQueries.DeleteOrderDetail(context.Background(), orderDetail.Pk)
+	orderDetail := createRandomOrderDetails(t)
+	err := testQueries.DeleteOrderDetails(context.Background(), orderDetail.Pk)
 	require.NoError(t, err)
 
 	// ensure the order detail is deleted
-	_, err = testQueries.GetOrderDetail(context.Background(), orderDetail.Pk)
+	_, err = testQueries.GetOrderDetails(context.Background(), orderDetail.Pk)
 	require.Error(t, err)
 }

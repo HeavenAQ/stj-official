@@ -101,47 +101,41 @@ func (q *Queries) GetOrder(ctx context.Context, pk int64) (Order, error) {
 	return i, err
 }
 
-const getOrderByUser = `-- name: GetOrderByUser :many
+const getOrderByUserAndOrderID = `-- name: GetOrderByUserAndOrderID :one
 SELECT
     pk, id, user_pk, status, is_paid, total_price, shipping_address, email, phone, shipping_date, delivered_date, created_at, updated_at
 FROM
     orders
 WHERE
     user_pk = $1
+AND
+    id = $2
 `
 
-func (q *Queries) GetOrderByUser(ctx context.Context, userPk int64) ([]Order, error) {
-	rows, err := q.db.Query(ctx, getOrderByUser, userPk)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Order
-	for rows.Next() {
-		var i Order
-		if err := rows.Scan(
-			&i.Pk,
-			&i.ID,
-			&i.UserPk,
-			&i.Status,
-			&i.IsPaid,
-			&i.TotalPrice,
-			&i.ShippingAddress,
-			&i.Email,
-			&i.Phone,
-			&i.ShippingDate,
-			&i.DeliveredDate,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type GetOrderByUserAndOrderIDParams struct {
+	UserPk int64       `json:"user_pk"`
+	ID     pgtype.UUID `json:"id"`
+}
+
+func (q *Queries) GetOrderByUserAndOrderID(ctx context.Context, arg GetOrderByUserAndOrderIDParams) (Order, error) {
+	row := q.db.QueryRow(ctx, getOrderByUserAndOrderID, arg.UserPk, arg.ID)
+	var i Order
+	err := row.Scan(
+		&i.Pk,
+		&i.ID,
+		&i.UserPk,
+		&i.Status,
+		&i.IsPaid,
+		&i.TotalPrice,
+		&i.ShippingAddress,
+		&i.Email,
+		&i.Phone,
+		&i.ShippingDate,
+		&i.DeliveredDate,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const listOrders = `-- name: ListOrders :many

@@ -217,6 +217,7 @@ type Product struct {
 	ID        pgtype.UUID        `json:"id"`
 	Price     int32              `json:"price"`
 	Discount  int32              `json:"discount"`
+	IsHot     bool               `json:"is_hot"`
 	ImageURLs []string           `json:"imageURLs"`
 	Status    ProductStatus      `json:"status"`
 	Quantity  int32              `json:"quantity"`
@@ -224,15 +225,23 @@ type Product struct {
 	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 }
 
+type ProductDescription struct {
+	Pk                   int64  `json:"pk"`
+	ProductTranslationPk int64  `json:"product_translation_pk"`
+	Introduction         string `json:"introduction"`
+	Prize                string `json:"prize"`
+	ItemInfo             string `json:"item_info"`
+	Recommendation       string `json:"recommendation"`
+}
+
 type ProductTranslation struct {
-	Pk          int64              `json:"pk"`
-	ProductPk   int64              `json:"product_pk"`
-	Language    LanguageCode       `json:"language"`
-	Name        string             `json:"name"`
-	Description string             `json:"description"`
-	Category    string             `json:"category"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+	Pk        int64              `json:"pk"`
+	ProductPk int64              `json:"product_pk"`
+	Name      string             `json:"name"`
+	Language  LanguageCode       `json:"language"`
+	Category  string             `json:"category"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
 }
 
 type Session struct {

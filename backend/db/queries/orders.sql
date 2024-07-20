@@ -12,13 +12,15 @@ FROM
 WHERE
     pk = $1;
 
--- name: GetOrderByUser :many
+-- name: GetOrderByUserAndOrderID :one
 SELECT
     *
 FROM
     orders
 WHERE
-    user_pk = $1;
+    user_pk = $1
+AND
+    id = $2;
 
 -- name: ListOrders :many
 SELECT

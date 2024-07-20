@@ -11,6 +11,7 @@ func createRandomProduct(t *testing.T) Product {
 	args := CreateProductParams{
 		Price:     100,
 		ImageURLs: []string{"image"},
+		IsHot:     false,
 		Status:    ProductStatusInStock,
 		Quantity:  10,
 	}
@@ -27,6 +28,7 @@ func createRandomProduct(t *testing.T) Product {
 	require.Equal(t, args.ImageURLs, product.ImageURLs)
 	require.Equal(t, args.Status, product.Status)
 	require.Equal(t, args.Quantity, product.Quantity)
+	require.Equal(t, args.IsHot, product.IsHot)
 	require.NotZero(t, product.CreatedAt)
 	require.NotZero(t, product.UpdatedAt)
 	return product
@@ -51,6 +53,7 @@ func TestQueries_GetProduct(t *testing.T) {
 	require.Equal(t, product1.Price, product2.Price)
 	require.Equal(t, product1.ImageURLs, product2.ImageURLs)
 	require.Equal(t, product1.Status, product2.Status)
+	require.Equal(t, product1.IsHot, product2.IsHot)
 	require.Equal(t, product1.Quantity, product2.Quantity)
 	require.WithinDuration(t, product1.CreatedAt.Time, product2.CreatedAt.Time, 0)
 	require.WithinDuration(t, product1.UpdatedAt.Time, product2.UpdatedAt.Time, 0)
@@ -94,6 +97,7 @@ func TestQueries_UpdateProduct(t *testing.T) {
 		Price:     200,
 		ImageURLs: []string{"image2", "image3"},
 		Status:    ProductStatusOutOfStock,
+		IsHot:     true,
 		Quantity:  20,
 	}
 
@@ -109,6 +113,7 @@ func TestQueries_UpdateProduct(t *testing.T) {
 	require.Equal(t, args.ImageURLs, product2.ImageURLs)
 	require.Equal(t, args.Status, product2.Status)
 	require.Equal(t, args.Quantity, product2.Quantity)
+	require.Equal(t, args.IsHot, product2.IsHot)
 	require.WithinDuration(t, product1.CreatedAt.Time, product2.CreatedAt.Time, 0)
 	require.NotEqual(t, product1.UpdatedAt.Time, product2.UpdatedAt.Time)
 
@@ -130,18 +135,18 @@ func TestQueries_DeleteProduct(t *testing.T) {
 
 func TestQueries_DeleteProductAndInfo(t *testing.T) {
 	// create a random product with info
-	product := addRandomProductTx(t)
-	err := testQueries.DeleteProductById(context.Background(), product.Product.ID)
+	productWithInfo := addRandomProductTx(t)
+	err := testQueries.DeleteProductById(context.Background(), productWithInfo.Product.ID)
 	require.NoError(t, err)
 
 	// ensure product is deleted
-	product2, err := testQueries.GetProduct(context.Background(), product.Product.Pk)
+	product2, err := testQueries.GetProduct(context.Background(), productWithInfo.Product.Pk)
 	require.Error(t, err)
 	require.Empty(t, product2)
 
 	// ensure product info is deleted
 	var nilProductInfo []ProductTranslation
-	product2Info, err := testQueries.GetProductTranslations(context.Background(), product.Product.Pk)
+	product2Info, err := testQueries.GetProductTranslations(context.Background(), productWithInfo.Product.Pk)
 	require.NoError(t, err)
 	require.Equal(t, product2Info, nilProductInfo)
 }

@@ -8,14 +8,14 @@ import (
 )
 
 type OrderItem struct {
-	Name     string      `json:"name"`
-	Quantity int32       `json:"quantity"`
-	ID       pgtype.UUID `json:"product_id"`
+	Name      string      `json:"name"`
+	Quantity  int32       `json:"quantity"`
+	ProductID pgtype.UUID `json:"product_id"`
 }
 
 func GetOrderItemsFromDB(ctx *gin.Context, store *db.Store, orderID int64, language db.LanguageCode) ([]OrderItem, error) {
 	// get order details
-	orderDetails, err := store.GetOrderDetailByOrder(ctx, orderID)
+	orderDetails, err := store.GetOrderDetailsByOrderPk(ctx, orderID)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,6 @@ func GetOrderItemsFromDB(ctx *gin.Context, store *db.Store, orderID int64, langu
 
 		// create item
 		allItems[j] = OrderItem{
-			ID:       product.ID,
 			Name:     productInfo.Name,
 			Quantity: detail.Quantity,
 		}

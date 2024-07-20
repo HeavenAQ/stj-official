@@ -12,10 +12,10 @@ import (
 )
 
 const createProduct = `-- name: CreateProduct :one
-INSERT INTO products (price, "imageURLs", status, quantity)
-    VALUES ($1, $2, $3, $4)
+INSERT INTO products (price, "imageURLs", status, quantity, is_hot)
+    VALUES ($1, $2, $3, $4, $5)
 RETURNING
-    pk, id, price, discount, "imageURLs", status, quantity, created_at, updated_at
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
 `
 
 type CreateProductParams struct {
@@ -23,6 +23,7 @@ type CreateProductParams struct {
 	ImageURLs []string      `json:"imageURLs"`
 	Status    ProductStatus `json:"status"`
 	Quantity  int32         `json:"quantity"`
+	IsHot     bool          `json:"is_hot"`
 }
 
 func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (Product, error) {
@@ -31,6 +32,7 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 		arg.ImageURLs,
 		arg.Status,
 		arg.Quantity,
+		arg.IsHot,
 	)
 	var i Product
 	err := row.Scan(
@@ -38,6 +40,48 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) (P
 		&i.ID,
 		&i.Price,
 		&i.Discount,
+		&i.IsHot,
+		&i.ImageURLs,
+		&i.Status,
+		&i.Quantity,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createProductWithDiscount = `-- name: CreateProductWithDiscount :one
+INSERT INTO products (price, discount, "imageURLs", status, quantity, is_hot)
+    VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
+`
+
+type CreateProductWithDiscountParams struct {
+	Price     int32         `json:"price"`
+	Discount  int32         `json:"discount"`
+	ImageURLs []string      `json:"imageURLs"`
+	Status    ProductStatus `json:"status"`
+	Quantity  int32         `json:"quantity"`
+	IsHot     bool          `json:"is_hot"`
+}
+
+func (q *Queries) CreateProductWithDiscount(ctx context.Context, arg CreateProductWithDiscountParams) (Product, error) {
+	row := q.db.QueryRow(ctx, createProductWithDiscount,
+		arg.Price,
+		arg.Discount,
+		arg.ImageURLs,
+		arg.Status,
+		arg.Quantity,
+		arg.IsHot,
+	)
+	var i Product
+	err := row.Scan(
+		&i.Pk,
+		&i.ID,
+		&i.Price,
+		&i.Discount,
+		&i.IsHot,
 		&i.ImageURLs,
 		&i.Status,
 		&i.Quantity,
@@ -69,7 +113,7 @@ func (q *Queries) DeleteProductById(ctx context.Context, id pgtype.UUID) error {
 
 const getProdcutByStatus = `-- name: GetProdcutByStatus :many
 SELECT
-    pk, id, price, discount, "imageURLs", status, quantity, created_at, updated_at
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
 FROM
     products
 WHERE
@@ -90,6 +134,7 @@ func (q *Queries) GetProdcutByStatus(ctx context.Context, status ProductStatus) 
 			&i.ID,
 			&i.Price,
 			&i.Discount,
+			&i.IsHot,
 			&i.ImageURLs,
 			&i.Status,
 			&i.Quantity,
@@ -108,7 +153,7 @@ func (q *Queries) GetProdcutByStatus(ctx context.Context, status ProductStatus) 
 
 const getProduct = `-- name: GetProduct :one
 SELECT
-    pk, id, price, discount, "imageURLs", status, quantity, created_at, updated_at
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
 FROM
     products
 WHERE
@@ -123,6 +168,7 @@ func (q *Queries) GetProduct(ctx context.Context, pk int64) (Product, error) {
 		&i.ID,
 		&i.Price,
 		&i.Discount,
+		&i.IsHot,
 		&i.ImageURLs,
 		&i.Status,
 		&i.Quantity,
@@ -134,7 +180,7 @@ func (q *Queries) GetProduct(ctx context.Context, pk int64) (Product, error) {
 
 const getProductByID = `-- name: GetProductByID :one
 SELECT
-    pk, id, price, discount, "imageURLs", status, quantity, created_at, updated_at
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
 FROM
     products
 WHERE
@@ -149,6 +195,7 @@ func (q *Queries) GetProductByID(ctx context.Context, id pgtype.UUID) (Product, 
 		&i.ID,
 		&i.Price,
 		&i.Discount,
+		&i.IsHot,
 		&i.ImageURLs,
 		&i.Status,
 		&i.Quantity,
@@ -160,7 +207,7 @@ func (q *Queries) GetProductByID(ctx context.Context, id pgtype.UUID) (Product, 
 
 const getProductByPrice = `-- name: GetProductByPrice :many
 SELECT
-    pk, id, price, discount, "imageURLs", status, quantity, created_at, updated_at
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
 FROM
     products
 WHERE
@@ -187,6 +234,7 @@ func (q *Queries) GetProductByPrice(ctx context.Context, arg GetProductByPricePa
 			&i.ID,
 			&i.Price,
 			&i.Discount,
+			&i.IsHot,
 			&i.ImageURLs,
 			&i.Status,
 			&i.Quantity,
@@ -205,7 +253,7 @@ func (q *Queries) GetProductByPrice(ctx context.Context, arg GetProductByPricePa
 
 const getProductByQuantity = `-- name: GetProductByQuantity :many
 SELECT
-    pk, id, price, discount, "imageURLs", status, quantity, created_at, updated_at
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
 FROM
     products
 WHERE
@@ -232,6 +280,7 @@ func (q *Queries) GetProductByQuantity(ctx context.Context, arg GetProductByQuan
 			&i.ID,
 			&i.Price,
 			&i.Discount,
+			&i.IsHot,
 			&i.ImageURLs,
 			&i.Status,
 			&i.Quantity,
@@ -250,7 +299,7 @@ func (q *Queries) GetProductByQuantity(ctx context.Context, arg GetProductByQuan
 
 const listProducts = `-- name: ListProducts :many
 SELECT
-    pk, id, price, discount, "imageURLs", status, quantity, created_at, updated_at
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
 FROM
     products
 LIMIT $1 offset $2
@@ -275,6 +324,7 @@ func (q *Queries) ListProducts(ctx context.Context, arg ListProductsParams) ([]P
 			&i.ID,
 			&i.Price,
 			&i.Discount,
+			&i.IsHot,
 			&i.ImageURLs,
 			&i.Status,
 			&i.Quantity,
@@ -298,11 +348,12 @@ SET
     price = $2,
     "imageURLs" = $3,
     status = $4,
-    quantity = $5
+    quantity = $5,
+    is_hot = $6
 WHERE
     pk = $1
 RETURNING
-    pk, id, price, discount, "imageURLs", status, quantity, created_at, updated_at
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
 `
 
 type UpdateProductParams struct {
@@ -311,6 +362,7 @@ type UpdateProductParams struct {
 	ImageURLs []string      `json:"imageURLs"`
 	Status    ProductStatus `json:"status"`
 	Quantity  int32         `json:"quantity"`
+	IsHot     bool          `json:"is_hot"`
 }
 
 func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (Product, error) {
@@ -320,6 +372,7 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		arg.ImageURLs,
 		arg.Status,
 		arg.Quantity,
+		arg.IsHot,
 	)
 	var i Product
 	err := row.Scan(
@@ -327,6 +380,7 @@ func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) (P
 		&i.ID,
 		&i.Price,
 		&i.Discount,
+		&i.IsHot,
 		&i.ImageURLs,
 		&i.Status,
 		&i.Quantity,
@@ -344,7 +398,7 @@ SET
 WHERE
     pk = $1
 RETURNING
-    pk, id, price, discount, "imageURLs", status, quantity, created_at, updated_at
+    pk, id, price, discount, is_hot, "imageURLs", status, quantity, created_at, updated_at
 `
 
 type UpdateProductIdxImageURLParams struct {
@@ -361,6 +415,7 @@ func (q *Queries) UpdateProductIdxImageURL(ctx context.Context, arg UpdateProduc
 		&i.ID,
 		&i.Price,
 		&i.Discount,
+		&i.IsHot,
 		&i.ImageURLs,
 		&i.Status,
 		&i.Quantity,

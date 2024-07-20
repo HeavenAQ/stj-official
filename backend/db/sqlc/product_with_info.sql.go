@@ -15,6 +15,7 @@ const getProductWithInfo = `-- name: GetProductWithInfo :one
 SELECT
     products.price,
     products.id,
+    products.is_hot,
     products."imageURLs",
     products.status,
     products.quantity,
@@ -22,10 +23,14 @@ SELECT
     products.updated_at,
     product_translations.category,
     product_translations.name,
-    product_translations.description
+    product_descriptions.introduction,
+    product_descriptions.prize,
+    product_descriptions.item_info,
+    product_descriptions.recommendation
 FROM
     products
     INNER JOIN product_translations ON products.pk = product_translations.product_pk
+    INNER JOIN product_descriptions ON product_translations.pk = product_descriptions.product_translation_pk
 WHERE
     products.id = $1
     AND product_translations.language = $2
@@ -37,16 +42,20 @@ type GetProductWithInfoParams struct {
 }
 
 type GetProductWithInfoRow struct {
-	Price       int32              `json:"price"`
-	ID          pgtype.UUID        `json:"id"`
-	ImageURLs   []string           `json:"imageURLs"`
-	Status      ProductStatus      `json:"status"`
-	Quantity    int32              `json:"quantity"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
-	Category    string             `json:"category"`
-	Name        string             `json:"name"`
-	Description string             `json:"description"`
+	Price          int32              `json:"price"`
+	ID             pgtype.UUID        `json:"id"`
+	IsHot          bool               `json:"is_hot"`
+	ImageURLs      []string           `json:"imageURLs"`
+	Status         ProductStatus      `json:"status"`
+	Quantity       int32              `json:"quantity"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+	Category       string             `json:"category"`
+	Name           string             `json:"name"`
+	Introduction   string             `json:"introduction"`
+	Prize          string             `json:"prize"`
+	ItemInfo       string             `json:"item_info"`
+	Recommendation string             `json:"recommendation"`
 }
 
 func (q *Queries) GetProductWithInfo(ctx context.Context, arg GetProductWithInfoParams) (GetProductWithInfoRow, error) {
@@ -55,6 +64,7 @@ func (q *Queries) GetProductWithInfo(ctx context.Context, arg GetProductWithInfo
 	err := row.Scan(
 		&i.Price,
 		&i.ID,
+		&i.IsHot,
 		&i.ImageURLs,
 		&i.Status,
 		&i.Quantity,
@@ -62,7 +72,10 @@ func (q *Queries) GetProductWithInfo(ctx context.Context, arg GetProductWithInfo
 		&i.UpdatedAt,
 		&i.Category,
 		&i.Name,
-		&i.Description,
+		&i.Introduction,
+		&i.Prize,
+		&i.ItemInfo,
+		&i.Recommendation,
 	)
 	return i, err
 }
@@ -72,16 +85,21 @@ SELECT
     products.price,
     products.id,
     products."imageURLs",
+    products.is_hot,
     products.status,
     products.quantity,
     products.created_at,
     products.updated_at,
     product_translations.category,
     product_translations.name,
-    product_translations.description
+    product_descriptions.introduction,
+    product_descriptions.prize,
+    product_descriptions.item_info,
+    product_descriptions.recommendation
 FROM
     products
     INNER JOIN product_translations ON products.pk = product_translations.product_pk
+    INNER JOIN product_descriptions ON product_translations.pk = product_descriptions.product_translation_pk
 WHERE
     product_translations.language = $1
 LIMIT $2 offset $3
@@ -94,16 +112,20 @@ type ListProductWithInfoParams struct {
 }
 
 type ListProductWithInfoRow struct {
-	Price       int32              `json:"price"`
-	ID          pgtype.UUID        `json:"id"`
-	ImageURLs   []string           `json:"imageURLs"`
-	Status      ProductStatus      `json:"status"`
-	Quantity    int32              `json:"quantity"`
-	CreatedAt   pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
-	Category    string             `json:"category"`
-	Name        string             `json:"name"`
-	Description string             `json:"description"`
+	Price          int32              `json:"price"`
+	ID             pgtype.UUID        `json:"id"`
+	ImageURLs      []string           `json:"imageURLs"`
+	IsHot          bool               `json:"is_hot"`
+	Status         ProductStatus      `json:"status"`
+	Quantity       int32              `json:"quantity"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+	Category       string             `json:"category"`
+	Name           string             `json:"name"`
+	Introduction   string             `json:"introduction"`
+	Prize          string             `json:"prize"`
+	ItemInfo       string             `json:"item_info"`
+	Recommendation string             `json:"recommendation"`
 }
 
 func (q *Queries) ListProductWithInfo(ctx context.Context, arg ListProductWithInfoParams) ([]ListProductWithInfoRow, error) {
@@ -119,13 +141,17 @@ func (q *Queries) ListProductWithInfo(ctx context.Context, arg ListProductWithIn
 			&i.Price,
 			&i.ID,
 			&i.ImageURLs,
+			&i.IsHot,
 			&i.Status,
 			&i.Quantity,
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.Category,
 			&i.Name,
-			&i.Description,
+			&i.Introduction,
+			&i.Prize,
+			&i.ItemInfo,
+			&i.Recommendation,
 		); err != nil {
 			return nil, err
 		}

@@ -1,6 +1,12 @@
 -- name: CreateProduct :one
-INSERT INTO products (price, "imageURLs", status, quantity)
-    VALUES ($1, $2, $3, $4)
+INSERT INTO products (price, "imageURLs", status, quantity, is_hot)
+    VALUES ($1, $2, $3, $4, $5)
+RETURNING
+    *;
+
+-- name: CreateProductWithDiscount :one
+INSERT INTO products (price, discount, "imageURLs", status, quantity, is_hot)
+    VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING
     *;
 
@@ -26,7 +32,8 @@ SET
     price = $2,
     "imageURLs" = $3,
     status = $4,
-    quantity = $5
+    quantity = $5,
+    is_hot = $6
 WHERE
     pk = $1
 RETURNING

@@ -1,10 +1,10 @@
--- name: CreateOrderDetail :one
+-- name: CreateOrderDetails :one
 INSERT INTO order_details (order_pk, product_pk, quantity, price)
     VALUES ($1, $2, $3, $4)
 RETURNING
     *;
 
--- name: GetOrderDetail :one
+-- name: GetOrderDetails :one
 SELECT
     *
 FROM
@@ -12,7 +12,7 @@ FROM
 WHERE
     pk = $1;
 
--- name: GetOrderDetailByOrder :many
+-- name: GetOrderDetailsByOrderPk :many
 SELECT
     *
 FROM
@@ -20,7 +20,7 @@ FROM
 WHERE
     order_pk = $1;
 
--- name: UpdateOrderDetail :one
+-- name: UpdateOrderDetails :one
 UPDATE
     order_details
 SET
@@ -34,6 +34,6 @@ WHERE
 RETURNING
     *;
 
--- name: DeleteOrderDetail :exec
+-- name: DeleteOrderDetails :exec
 DELETE FROM order_details
 WHERE pk = $1;

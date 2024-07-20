@@ -10,19 +10,17 @@ import (
 )
 
 const createProductTranslation = `-- name: CreateProductTranslation :one
-INSERT INTO product_translations (product_pk,
-    LANGUAGE, name, description, category)
-    VALUES ($1, $2, $3, $4, $5)
+INSERT INTO product_translations (product_pk, language, name, category)
+    VALUES ($1, $2, $3, $4)
 RETURNING
-    pk, product_pk, language, name, description, category, created_at, updated_at
+    pk, product_pk, name, language, category, created_at, updated_at
 `
 
 type CreateProductTranslationParams struct {
-	ProductPk   int64        `json:"product_pk"`
-	Language    LanguageCode `json:"language"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	Category    string       `json:"category"`
+	ProductPk int64        `json:"product_pk"`
+	Language  LanguageCode `json:"language"`
+	Name      string       `json:"name"`
+	Category  string       `json:"category"`
 }
 
 func (q *Queries) CreateProductTranslation(ctx context.Context, arg CreateProductTranslationParams) (ProductTranslation, error) {
@@ -30,16 +28,14 @@ func (q *Queries) CreateProductTranslation(ctx context.Context, arg CreateProduc
 		arg.ProductPk,
 		arg.Language,
 		arg.Name,
-		arg.Description,
 		arg.Category,
 	)
 	var i ProductTranslation
 	err := row.Scan(
 		&i.Pk,
 		&i.ProductPk,
-		&i.Language,
 		&i.Name,
-		&i.Description,
+		&i.Language,
 		&i.Category,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -51,8 +47,7 @@ const deleteProductTranslation = `-- name: DeleteProductTranslation :exec
 DELETE FROM product_translations
 WHERE product_pk = $1
     AND
-    LANGUAGE =
-    $2
+    language = $2
 `
 
 type DeleteProductTranslationParams struct {
@@ -67,14 +62,13 @@ func (q *Queries) DeleteProductTranslation(ctx context.Context, arg DeleteProduc
 
 const getProductTranslation = `-- name: GetProductTranslation :one
 SELECT
-    pk, product_pk, language, name, description, category, created_at, updated_at
+    pk, product_pk, name, language, category, created_at, updated_at
 FROM
     product_translations
 WHERE
     product_pk = $1
     AND
-    LANGUAGE =
-    $2
+    language = $2
 LIMIT 1
 `
 
@@ -89,9 +83,8 @@ func (q *Queries) GetProductTranslation(ctx context.Context, arg GetProductTrans
 	err := row.Scan(
 		&i.Pk,
 		&i.ProductPk,
-		&i.Language,
 		&i.Name,
-		&i.Description,
+		&i.Language,
 		&i.Category,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -101,7 +94,7 @@ func (q *Queries) GetProductTranslation(ctx context.Context, arg GetProductTrans
 
 const getProductTranslations = `-- name: GetProductTranslations :many
 SELECT
-    pk, product_pk, language, name, description, category, created_at, updated_at
+    pk, product_pk, name, language, category, created_at, updated_at
 FROM
     product_translations
 WHERE
@@ -120,9 +113,8 @@ func (q *Queries) GetProductTranslations(ctx context.Context, productPk int64) (
 		if err := rows.Scan(
 			&i.Pk,
 			&i.ProductPk,
-			&i.Language,
 			&i.Name,
-			&i.Description,
+			&i.Language,
 			&i.Category,
 			&i.CreatedAt,
 			&i.UpdatedAt,
@@ -142,23 +134,20 @@ UPDATE
     product_translations
 SET
     name = $3,
-    description = $4,
-    category = $5
+    category = $4
 WHERE
     product_pk = $1
     AND
-    LANGUAGE =
-    $2
+    language = $2
 RETURNING
-    pk, product_pk, language, name, description, category, created_at, updated_at
+    pk, product_pk, name, language, category, created_at, updated_at
 `
 
 type UpdateProductTranslationParams struct {
-	ProductPk   int64        `json:"product_pk"`
-	Language    LanguageCode `json:"language"`
-	Name        string       `json:"name"`
-	Description string       `json:"description"`
-	Category    string       `json:"category"`
+	ProductPk int64        `json:"product_pk"`
+	Language  LanguageCode `json:"language"`
+	Name      string       `json:"name"`
+	Category  string       `json:"category"`
 }
 
 func (q *Queries) UpdateProductTranslation(ctx context.Context, arg UpdateProductTranslationParams) (ProductTranslation, error) {
@@ -166,16 +155,14 @@ func (q *Queries) UpdateProductTranslation(ctx context.Context, arg UpdateProduc
 		arg.ProductPk,
 		arg.Language,
 		arg.Name,
-		arg.Description,
 		arg.Category,
 	)
 	var i ProductTranslation
 	err := row.Scan(
 		&i.Pk,
 		&i.ProductPk,
-		&i.Language,
 		&i.Name,
-		&i.Description,
+		&i.Language,
 		&i.Category,
 		&i.CreatedAt,
 		&i.UpdatedAt,

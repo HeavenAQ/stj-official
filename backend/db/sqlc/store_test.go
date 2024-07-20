@@ -10,28 +10,34 @@ import (
 
 func addRandomProductTx(t *testing.T) *ProductTxResult {
 	arg := AddProductTxParams{
-		LangCode:    LanguageCode(utils.RandomLanguage()),
-		Name:        utils.RandomAlphabetString(10),
-		Description: utils.RandomAlphabetString(20),
-		ImageURLs:   []string{utils.RandomAlphabetString(10), utils.RandomAlphabetString(10)},
-		Price:       int32(utils.RandomInt(0, 1000)),
-		Status:      ProductStatusInStock,
-		Quantity:    10,
-		Category:    "test",
+		LangCode:       LanguageCode(utils.RandomLanguage()),
+		Name:           utils.RandomAlphabetString(10),
+		ImageURLs:      []string{utils.RandomAlphabetString(10), utils.RandomAlphabetString(10)},
+		Price:          int32(utils.RandomInt(0, 1000)),
+		Status:         ProductStatusInStock,
+		Quantity:       10,
+		Category:       "test",
+		Introduction:   utils.RandomAlphabetString(10),
+		Prize:          utils.RandomAlphabetString(10),
+		Recommendation: utils.RandomAlphabetString(10),
+		ItemInfo:       utils.RandomAlphabetString(10),
 	}
 	return addProductTx(t, arg)
 }
 
 func addProductTxWithLangCode(t *testing.T, langCode LanguageCode) *ProductTxResult {
 	arg := AddProductTxParams{
-		LangCode:    langCode,
-		Name:        utils.RandomAlphabetString(10),
-		Description: utils.RandomAlphabetString(20),
-		ImageURLs:   []string{utils.RandomAlphabetString(10), utils.RandomAlphabetString(10)},
-		Price:       int32(utils.RandomInt(0, 1000)),
-		Status:      ProductStatusInStock,
-		Quantity:    10,
-		Category:    "test",
+		LangCode:       langCode,
+		Name:           utils.RandomAlphabetString(10),
+		Introduction:   utils.RandomAlphabetString(10),
+		Prize:          utils.RandomAlphabetString(10),
+		Recommendation: utils.RandomAlphabetString(10),
+		ItemInfo:       utils.RandomAlphabetString(10),
+		ImageURLs:      []string{utils.RandomAlphabetString(10), utils.RandomAlphabetString(10)},
+		Price:          int32(utils.RandomInt(0, 1000)),
+		Status:         ProductStatusInStock,
+		Quantity:       10,
+		Category:       "test",
 	}
 	return addProductTx(t, arg)
 }
@@ -44,7 +50,6 @@ func addProductTx(t *testing.T, arg AddProductTxParams) *ProductTxResult {
 
 	// ensure the product description is correct
 	require.Equal(t, arg.Name, product.ProductTrans.Name)
-	require.Equal(t, arg.Description, product.ProductTrans.Description)
 	require.Equal(t, arg.LangCode, product.ProductTrans.Language)
 	require.Equal(t, arg.Category, product.ProductTrans.Category)
 	require.NotZero(t, product.ProductTrans.Pk)
@@ -75,6 +80,6 @@ func TestStore_HealthCheck(t *testing.T) {
 }
 
 func TestStore_AddProductTx(t *testing.T) {
-	product := addRandomProductTx(t)
-	testQueries.DeleteProduct(context.Background(), product.Product.Pk)
+	productWithInfo := addRandomProductTx(t)
+	testQueries.DeleteProduct(context.Background(), productWithInfo.Product.Pk)
 }

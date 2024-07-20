@@ -9,22 +9,22 @@ import (
 	"context"
 )
 
-const createOrderDetail = `-- name: CreateOrderDetail :one
+const createOrderDetails = `-- name: CreateOrderDetails :one
 INSERT INTO order_details (order_pk, product_pk, quantity, price)
     VALUES ($1, $2, $3, $4)
 RETURNING
     pk, order_pk, product_pk, quantity, price, discount, created_at, updated_at
 `
 
-type CreateOrderDetailParams struct {
+type CreateOrderDetailsParams struct {
 	OrderPk   int64 `json:"order_pk"`
 	ProductPk int64 `json:"product_pk"`
 	Quantity  int32 `json:"quantity"`
 	Price     int32 `json:"price"`
 }
 
-func (q *Queries) CreateOrderDetail(ctx context.Context, arg CreateOrderDetailParams) (OrderDetail, error) {
-	row := q.db.QueryRow(ctx, createOrderDetail,
+func (q *Queries) CreateOrderDetails(ctx context.Context, arg CreateOrderDetailsParams) (OrderDetail, error) {
+	row := q.db.QueryRow(ctx, createOrderDetails,
 		arg.OrderPk,
 		arg.ProductPk,
 		arg.Quantity,
@@ -44,17 +44,17 @@ func (q *Queries) CreateOrderDetail(ctx context.Context, arg CreateOrderDetailPa
 	return i, err
 }
 
-const deleteOrderDetail = `-- name: DeleteOrderDetail :exec
+const deleteOrderDetails = `-- name: DeleteOrderDetails :exec
 DELETE FROM order_details
 WHERE pk = $1
 `
 
-func (q *Queries) DeleteOrderDetail(ctx context.Context, pk int64) error {
-	_, err := q.db.Exec(ctx, deleteOrderDetail, pk)
+func (q *Queries) DeleteOrderDetails(ctx context.Context, pk int64) error {
+	_, err := q.db.Exec(ctx, deleteOrderDetails, pk)
 	return err
 }
 
-const getOrderDetail = `-- name: GetOrderDetail :one
+const getOrderDetails = `-- name: GetOrderDetails :one
 SELECT
     pk, order_pk, product_pk, quantity, price, discount, created_at, updated_at
 FROM
@@ -63,8 +63,8 @@ WHERE
     pk = $1
 `
 
-func (q *Queries) GetOrderDetail(ctx context.Context, pk int64) (OrderDetail, error) {
-	row := q.db.QueryRow(ctx, getOrderDetail, pk)
+func (q *Queries) GetOrderDetails(ctx context.Context, pk int64) (OrderDetail, error) {
+	row := q.db.QueryRow(ctx, getOrderDetails, pk)
 	var i OrderDetail
 	err := row.Scan(
 		&i.Pk,
@@ -79,7 +79,7 @@ func (q *Queries) GetOrderDetail(ctx context.Context, pk int64) (OrderDetail, er
 	return i, err
 }
 
-const getOrderDetailByOrder = `-- name: GetOrderDetailByOrder :many
+const getOrderDetailsByOrderPk = `-- name: GetOrderDetailsByOrderPk :many
 SELECT
     pk, order_pk, product_pk, quantity, price, discount, created_at, updated_at
 FROM
@@ -88,8 +88,8 @@ WHERE
     order_pk = $1
 `
 
-func (q *Queries) GetOrderDetailByOrder(ctx context.Context, orderPk int64) ([]OrderDetail, error) {
-	rows, err := q.db.Query(ctx, getOrderDetailByOrder, orderPk)
+func (q *Queries) GetOrderDetailsByOrderPk(ctx context.Context, orderPk int64) ([]OrderDetail, error) {
+	rows, err := q.db.Query(ctx, getOrderDetailsByOrderPk, orderPk)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func (q *Queries) GetOrderDetailByOrder(ctx context.Context, orderPk int64) ([]O
 	return items, nil
 }
 
-const updateOrderDetail = `-- name: UpdateOrderDetail :one
+const updateOrderDetails = `-- name: UpdateOrderDetails :one
 UPDATE
     order_details
 SET
@@ -132,7 +132,7 @@ RETURNING
     pk, order_pk, product_pk, quantity, price, discount, created_at, updated_at
 `
 
-type UpdateOrderDetailParams struct {
+type UpdateOrderDetailsParams struct {
 	Pk        int64 `json:"pk"`
 	OrderPk   int64 `json:"order_pk"`
 	ProductPk int64 `json:"product_pk"`
@@ -141,8 +141,8 @@ type UpdateOrderDetailParams struct {
 	Discount  int32 `json:"discount"`
 }
 
-func (q *Queries) UpdateOrderDetail(ctx context.Context, arg UpdateOrderDetailParams) (OrderDetail, error) {
-	row := q.db.QueryRow(ctx, updateOrderDetail,
+func (q *Queries) UpdateOrderDetails(ctx context.Context, arg UpdateOrderDetailsParams) (OrderDetail, error) {
+	row := q.db.QueryRow(ctx, updateOrderDetails,
 		arg.Pk,
 		arg.OrderPk,
 		arg.ProductPk,

@@ -98,28 +98,36 @@ func TestQueries_GetOrder(t *testing.T) {
 	testQueries.DeleteOrder(context.Background(), order1.Pk)
 }
 
-func TestQueries_GetOrderByUser(t *testing.T) {
+func TestQueries_GetOrderByUserAndOrderID(t *testing.T) {
+	// create random user for testing
 	user := createRandomUser(t)
-	orders := make([]Order, 10)
-	for i := 0; i < 10; i++ {
-		orders[i] = createRandomOrderWithUser(t, user)
-	}
+	require.NotEmpty(t, user)
 
-	// get order and check for error
-	retrievedOrders, err := testQueries.GetOrderByUser(context.Background(), user.Pk)
+	// create random order for testing
+	order := createRandomOrderWithUser(t, user)
+	require.NotEmpty(t, order)
+
+	// get order by user and order id
+	args := GetOrderByUserAndOrderIDParams{
+		UserPk: user.Pk,
+		ID:     order.ID,
+	}
+	order2, err := testQueries.GetOrderByUserAndOrderID(context.Background(), args)
 	require.NoError(t, err)
-	require.NotEmpty(t, retrievedOrders)
-
-	// check if the orders are the same
-	for i, order := range orders {
-		require.Equal(t, order.Pk, retrievedOrders[i].Pk)
-	}
-
-	// clean up
-	testQueries.DeleteUser(context.Background(), user.Pk)
-	for _, order := range orders {
-		testQueries.DeleteOrder(context.Background(), order.Pk)
-	}
+	require.NotEmpty(t, order2)
+	require.Equal(t, order.Pk, order2.Pk)
+	require.Equal(t, order.ID, order2.ID)
+	require.Equal(t, order.UserPk, order2.UserPk)
+	require.Equal(t, order.Status, order2.Status)
+	require.Equal(t, order.IsPaid, order2.IsPaid)
+	require.Equal(t, order.TotalPrice, order2.TotalPrice)
+	require.Equal(t, order.ShippingAddress, order2.ShippingAddress)
+	require.Equal(t, order.Email, order2.Email)
+	require.Equal(t, order.Phone, order2.Phone)
+	require.WithinDuration(t, order.ShippingDate.Time, order2.ShippingDate.Time, 0)
+	require.WithinDuration(t, order.DeliveredDate.Time, order2.DeliveredDate.Time, 0)
+	require.WithinDuration(t, order.CreatedAt.Time, order2.CreatedAt.Time, 0)
+	require.WithinDuration(t, order.UpdatedAt.Time, order2.UpdatedAt.Time, 0)
 }
 
 func TestQueries_ListOrders(t *testing.T) {

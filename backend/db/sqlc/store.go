@@ -48,19 +48,23 @@ func (store *Store) HealthCheck() error {
 }
 
 type AddProductTxParams struct {
-	LangCode    LanguageCode  `json:"code"`
-	Name        string        `json:"name"`
-	Description string        `json:"description"`
-	ImageURLs   []string      `json:"image_urls"`
-	Price       int32         `json:"price"`
-	Status      ProductStatus `json:"status"`
-	Quantity    int32         `json:"quantity"`
-	Category    string        `json:"category"`
+	LangCode       LanguageCode  `json:"code"`
+	Name           string        `json:"name"`
+	Status         ProductStatus `json:"status"`
+	Category       string        `json:"category"`
+	ImageURLs      []string      `json:"image_urls"`
+	Price          int32         `json:"price"`
+	Quantity       int32         `json:"quantity"`
+	Introduction   string        `json:"introduction"`
+	Prize          string        `json:"prize"`
+	ItemInfo       string        `json:"item_info"`
+	Recommendation string        `json:"recommendation"`
 }
 
 type ProductTxResult struct {
 	Product      Product
 	ProductTrans ProductTranslation
+	ProductDesc  ProductDescription
 }
 
 func (store *Store) AddProductTx(ctx context.Context, args AddProductTxParams) (*ProductTxResult, error) {
@@ -81,11 +85,19 @@ func (store *Store) AddProductTx(ctx context.Context, args AddProductTxParams) (
 
 		// create product translation
 		result.ProductTrans, err = q.CreateProductTranslation(ctx, CreateProductTranslationParams{
-			ProductPk:   result.Product.Pk,
-			Language:    args.LangCode,
-			Name:        args.Name,
-			Description: args.Description,
-			Category:    args.Category,
+			ProductPk: result.Product.Pk,
+			Language:  args.LangCode,
+			Name:      args.Name,
+			Category:  args.Category,
+		})
+
+		// create product description
+		result.ProductDesc, err = q.CreateProductDescription(ctx, CreateProductDescriptionParams{
+			ProductTranslationPk: result.ProductTrans.Pk,
+			Introduction:         args.Introduction,
+			Prize:                args.Prize,
+			ItemInfo:             args.ItemInfo,
+			Recommendation:       args.ItemInfo,
 		})
 
 		return nil
