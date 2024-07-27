@@ -24,7 +24,7 @@ type GetOrderResponse struct {
 
 func (server *Server) ListOrders(ctx *gin.Context) {
 	var req ListOrdersRequest
-	user, err := helpers.VerifyJSONAndGetUser(ctx, req, server.store, authorizationHeaderKey)
+	user, err := helpers.AuthAndGetUser(ctx, req, server.store, authorizationHeaderKey)
 	if err != nil {
 		server.ErrorLogger.Println(err)
 		return
@@ -82,7 +82,7 @@ type CreateOrderResponse struct {
 
 func (server *Server) CreateOrder(ctx *gin.Context) {
 	var req CreateOrderRequest
-	user, err := helpers.VerifyJSONAndGetUser(ctx, req, server.store, authorizationHeaderKey)
+	user, err := helpers.AuthAndGetUser(ctx, req, server.store, authorizationHeaderKey)
 	if err != nil {
 		server.ErrorLogger.Println(err)
 		return

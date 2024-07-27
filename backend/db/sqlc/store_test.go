@@ -9,7 +9,7 @@ import (
 )
 
 func addRandomProductTx(t *testing.T) *ProductTxResult {
-	arg := AddProductTxParams{
+	arg := CreateProductTxParams{
 		LangCode:       LanguageCode(utils.RandomLanguage()),
 		Name:           utils.RandomAlphabetString(10),
 		ImageURLs:      []string{utils.RandomAlphabetString(10), utils.RandomAlphabetString(10)},
@@ -22,11 +22,11 @@ func addRandomProductTx(t *testing.T) *ProductTxResult {
 		Recommendation: utils.RandomAlphabetString(10),
 		ItemInfo:       utils.RandomAlphabetString(10),
 	}
-	return addProductTx(t, arg)
+	return createProductTx(t, arg)
 }
 
-func addProductTxWithLangCode(t *testing.T, langCode LanguageCode) *ProductTxResult {
-	arg := AddProductTxParams{
+func createProductTxWithLangCode(t *testing.T, langCode LanguageCode) *ProductTxResult {
+	arg := CreateProductTxParams{
 		LangCode:       langCode,
 		Name:           utils.RandomAlphabetString(10),
 		Introduction:   utils.RandomAlphabetString(10),
@@ -39,12 +39,12 @@ func addProductTxWithLangCode(t *testing.T, langCode LanguageCode) *ProductTxRes
 		Quantity:       10,
 		Category:       "test",
 	}
-	return addProductTx(t, arg)
+	return createProductTx(t, arg)
 }
 
-func addProductTx(t *testing.T, arg AddProductTxParams) *ProductTxResult {
+func createProductTx(t *testing.T, arg CreateProductTxParams) *ProductTxResult {
 	// ensure the product is added
-	product, err := testStore.AddProductTx(context.Background(), arg)
+	product, err := testStore.CreateProductTx(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, product)
 
@@ -79,7 +79,7 @@ func TestStore_HealthCheck(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestStore_AddProductTx(t *testing.T) {
+func TestStore_CreateProductTx(t *testing.T) {
 	productWithInfo := addRandomProductTx(t)
 	testQueries.DeleteProduct(context.Background(), productWithInfo.Product.Pk)
 }

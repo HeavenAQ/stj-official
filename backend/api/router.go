@@ -20,6 +20,7 @@ func (server *Server) setupV1Routes(api *gin.RouterGroup) {
 func (server *Server) setupV1ProductsRoutes(v1 *gin.RouterGroup) {
 	products := v1.Group("/products").Use(server.authMiddleware(server.tokenMaker))
 	products.GET("", server.ListProducts)
+	products.POST("", server.CreateProduct)
 	products.DELETE("/:id", server.DeleteProduct)
 }
 

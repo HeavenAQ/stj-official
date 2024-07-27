@@ -19,6 +19,7 @@ type Config struct {
 	AccessTokenDuration  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	RefreshTokenDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 	Port                 string        `mapstructure:"PORT"`
+	ADMIN_EMAIL          string        `mapstructure:"ADMIN_EMAIL"`
 }
 
 // load config from .env file
@@ -52,6 +53,7 @@ func LoadConfigFromEnv() (config Config) {
 		AccessTokenDuration:  viper.GetDuration("ACCESS_TOKEN_DURATION"),
 		RefreshTokenDuration: viper.GetDuration("REFRESH_TOKEN_DURATION"),
 		Port:                 viper.GetString("PORT"),
+		ADMIN_EMAIL:          viper.GetString("ADMIN_EMAIL"),
 	}
 	return
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	db "stj-ecommerce/db/sqlc"
 	"stj-ecommerce/helpers"
+	apierrors "stj-ecommerce/helpers/api_errors"
 	"stj-ecommerce/token"
 	"stj-ecommerce/utils"
 
@@ -92,7 +93,7 @@ func (server *Server) CreateUser(ctx *gin.Context) {
 	// create user in database
 	user, err := server.store.CreateUser(ctx, args)
 	if err != nil {
-		ctx.JSON(http.StatusConflict, helpers.UserErrorResponse(err))
+		ctx.JSON(http.StatusConflict, apierrors.UserRegistrationError(err))
 		server.ErrorLogger.Println(err)
 		return
 	}
@@ -128,8 +129,15 @@ type UpdateUserRequest struct {
 }
 
 func (server *Server) UpdateUser(ctx *gin.Context) {
+	// ensure the request body is a valid JSON
 	var req UpdateUserRequest
-	oldUser, err := helpers.VerifyJSONAndGetUser(ctx, req, server.store, authorizationHeaderKey)
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// get old user information
+	oldUser, err := helpers.AuthAndGetUser(ctx, req, server.store, authorizationPayloadKey)
 	if err != nil {
 		server.ErrorLogger.Println(err)
 	}
@@ -152,7 +160,7 @@ func (server *Server) UpdateUser(ctx *gin.Context) {
 	}
 	user, err := server.store.UpdateUserById(ctx, arg)
 	if err != nil {
-		ctx.JSON(http.StatusConflict, helpers.UserErrorResponse(err))
+		ctx.JSON(http.StatusConflict, apierrors.UserRegistrationError(err))
 		server.ErrorLogger.Println(err)
 		return
 	}

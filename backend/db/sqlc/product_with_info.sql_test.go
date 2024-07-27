@@ -34,7 +34,7 @@ func TestQueries_ListProductWithInfo(t *testing.T) {
 	langCode := LanguageCode(utils.RandomLanguage())
 	// create dummy products
 	for i := 0; i < num; i++ {
-		addProductTxWithLangCode(t, langCode)
+		createProductTxWithLangCode(t, langCode)
 	}
 
 	// list products with info and check for errors

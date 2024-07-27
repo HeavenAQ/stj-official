@@ -47,7 +47,7 @@ func (store *Store) HealthCheck() error {
 	return store.db.Ping(context.Background())
 }
 
-type AddProductTxParams struct {
+type CreateProductTxParams struct {
 	LangCode       LanguageCode  `json:"code"`
 	Name           string        `json:"name"`
 	Status         ProductStatus `json:"status"`
@@ -67,7 +67,7 @@ type ProductTxResult struct {
 	ProductDesc  ProductDescription
 }
 
-func (store *Store) AddProductTx(ctx context.Context, args AddProductTxParams) (*ProductTxResult, error) {
+func (store *Store) CreateProductTx(ctx context.Context, args CreateProductTxParams) (*ProductTxResult, error) {
 	var result ProductTxResult
 	err := store.execTx(ctx, func(q *Queries) error {
 		var err error
