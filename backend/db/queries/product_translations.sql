@@ -15,6 +15,16 @@ WHERE
     language = $2
 LIMIT 1;
 
+-- name: GetProductTranslationByName :one
+SELECT
+    *
+FROM
+    product_translations
+WHERE
+    name = $1
+    AND
+    language = $2;
+
 -- name: GetProductTranslations :many
 SELECT
     *
@@ -40,5 +50,4 @@ RETURNING
 DELETE FROM product_translations
 WHERE product_pk = $1
     AND
-    language = $2
-    ;
+    language = $2;

@@ -92,6 +92,37 @@ func (q *Queries) GetProductTranslation(ctx context.Context, arg GetProductTrans
 	return i, err
 }
 
+const getProductTranslationByName = `-- name: GetProductTranslationByName :one
+SELECT
+    pk, product_pk, name, language, category, created_at, updated_at
+FROM
+    product_translations
+WHERE
+    name = $1
+    AND
+    language = $2
+`
+
+type GetProductTranslationByNameParams struct {
+	Name     string       `json:"name"`
+	Language LanguageCode `json:"language"`
+}
+
+func (q *Queries) GetProductTranslationByName(ctx context.Context, arg GetProductTranslationByNameParams) (ProductTranslation, error) {
+	row := q.db.QueryRow(ctx, getProductTranslationByName, arg.Name, arg.Language)
+	var i ProductTranslation
+	err := row.Scan(
+		&i.Pk,
+		&i.ProductPk,
+		&i.Name,
+		&i.Language,
+		&i.Category,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getProductTranslations = `-- name: GetProductTranslations :many
 SELECT
     pk, product_pk, name, language, category, created_at, updated_at

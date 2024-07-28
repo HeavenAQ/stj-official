@@ -50,6 +50,7 @@ func (store *Store) HealthCheck() error {
 type CreateProductTxParams struct {
 	LangCode       LanguageCode  `json:"code"`
 	Name           string        `json:"name"`
+	IsHot          bool          `json:"is_hot"`
 	Status         ProductStatus `json:"status"`
 	Category       string        `json:"category"`
 	ImageURLs      []string      `json:"image_urls"`
@@ -78,6 +79,7 @@ func (store *Store) CreateProductTx(ctx context.Context, args CreateProductTxPar
 			ImageURLs: args.ImageURLs,
 			Status:    args.Status,
 			Quantity:  args.Quantity,
+			IsHot:     args.IsHot,
 		})
 		if err != nil {
 			return err
@@ -97,7 +99,7 @@ func (store *Store) CreateProductTx(ctx context.Context, args CreateProductTxPar
 			Introduction:         args.Introduction,
 			Prize:                args.Prize,
 			ItemInfo:             args.ItemInfo,
-			Recommendation:       args.ItemInfo,
+			Recommendation:       args.Recommendation,
 		})
 
 		return nil

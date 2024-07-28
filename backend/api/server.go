@@ -21,7 +21,7 @@ type Server struct {
 	store       *db.Store
 	router      *gin.Engine
 	ErrorLogger *log.Logger
-	InforLogger *log.Logger
+	InfoLogger  *log.Logger
 	WarnLogger  *log.Logger
 	config      utils.Config
 }
@@ -94,7 +94,7 @@ func (server *Server) setupLogger() {
 	yellow := color.New(color.FgYellow)
 
 	server.ErrorLogger = log.New(os.Stderr, red.Sprint("[ERROR] "), log.Ldate|log.Ltime|log.Llongfile)
-	server.InforLogger = log.New(os.Stdout, cyan.Sprint("[INFO] "), log.Ldate|log.Ltime|log.Llongfile)
+	server.InfoLogger = log.New(os.Stdout, cyan.Sprint("[INFO] "), log.Ldate|log.Ltime|log.Llongfile)
 	server.WarnLogger = log.New(os.Stdout, yellow.Sprint("[WARN] "), log.Ldate|log.Ltime|log.Llongfile)
 }
 

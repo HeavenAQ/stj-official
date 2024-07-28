@@ -65,14 +65,14 @@ func (server *Server) DeleteProduct(ctx *gin.Context) {
 // create product
 type Description struct {
 	Introduction   string `json:"introduction" binding:"required"`
-	Prize          string `json:"prize" binding:"required"`
+	Prize          string `json:"prize"`
 	ItemInfo       string `json:"item_info" binding:"required"`
 	Recommendation string `json:"recommendation" binding:"required"`
 }
 
 type CreateProductRequest struct {
 	Name        string           `json:"name" binding:"required"`
-	Language    string           `json:"language" binding:"required"`
+	Language    db.LanguageCode  `json:"language" binding:"required"`
 	Category    string           `json:"category" binding:"required"`
 	Status      db.ProductStatus `json:"status"`
 	Description Description      `json:"description" binding:"required"`
@@ -84,7 +84,7 @@ type CreateProductRequest struct {
 
 type CreateProductResponse struct {
 	Name        string           `json:"name"`
-	Language    string           `json:"language"`
+	Language    db.LanguageCode  `json:"language"`
 	Category    string           `json:"category"`
 	Status      db.ProductStatus `json:"status"`
 	Description Description      `json:"description"`
@@ -115,9 +115,19 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 		return
 	}
 
+	// ensure the product does not already exist
+	_, err = server.store.GetProductTranslationByName(ctx, db.GetProductTranslationByNameParams{
+		Name:     req.Name,
+		Language: req.Language,
+	})
+	if err == nil {
+		ctx.JSON(http.StatusConflict, gin.H{"error": "product already exists"})
+		return
+	}
+
 	// start create-product transaction
 	product, err := server.store.CreateProductTx(ctx, db.CreateProductTxParams{
-		LangCode:       db.LanguageCode(req.Language),
+		LangCode:       req.Language,
 		Name:           req.Name,
 		Status:         req.Status,
 		Category:       req.Category,
@@ -128,6 +138,7 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 		Prize:          req.Description.Prize,
 		ItemInfo:       req.Description.ItemInfo,
 		Recommendation: req.Description.Recommendation,
+		IsHot:          req.IsHot,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -137,7 +148,7 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 	// return the result back to user
 	ctx.JSON(http.StatusOK, CreateProductResponse{
 		Name:     product.ProductTrans.Name,
-		Language: string(product.ProductTrans.Language),
+		Language: product.ProductTrans.Language,
 		Category: product.ProductTrans.Category,
 		Status:   product.Product.Status,
 		Description: Description{
@@ -151,4 +162,44 @@ func (server *Server) CreateProduct(ctx *gin.Context) {
 		Quantity:  product.Product.Quantity,
 		IsHot:     product.Product.IsHot,
 	})
+}
+
+type GetProductRequest struct {
+	ID       string          `uri:"id"`
+	Language db.LanguageCode `form:"language"`
+}
+
+// get product
+func (server *Server) GetProduct(ctx *gin.Context) {
+	// check if the product id is provided
+	var req GetProductRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		server.InfoLogger.Println(err.Error())
+		return
+	}
+
+	// check if the language is provided
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		server.InfoLogger.Println(err.Error())
+		return
+	}
+
+	// convert string to uuid
+	var pgUUID pgtype.UUID
+	pgUUID.Scan(req.ID)
+
+	// get product from database
+	product, err := server.store.GetProductWithInfo(ctx, db.GetProductWithInfoParams{
+		ID:       pgUUID,
+		Language: req.Language,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		server.ErrorLogger.Println(err.Error())
+		return
+	}
+
+	ctx.JSON(http.StatusOK, product)
 }

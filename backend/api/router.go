@@ -18,8 +18,12 @@ func (server *Server) setupV1Routes(api *gin.RouterGroup) {
 }
 
 func (server *Server) setupV1ProductsRoutes(v1 *gin.RouterGroup) {
-	products := v1.Group("/products").Use(server.authMiddleware(server.tokenMaker))
+	products := v1.Group("/products")
 	products.GET("", server.ListProducts)
+	products.GET("/:id", server.GetProduct)
+
+	// Protected routes
+	products.Use(server.authMiddleware(server.tokenMaker))
 	products.POST("", server.CreateProduct)
 	products.DELETE("/:id", server.DeleteProduct)
 }
