@@ -7,10 +7,10 @@ import React, {
 } from 'react'
 import { toast } from 'react-hot-toast'
 
-import { SakeInfo } from '../data/sakes'
+import { ProductWithInfo } from '../types/api/product'
 
 export interface CartItem {
-  product: SakeInfo
+  product: ProductWithInfo
   quantity: number
 }
 

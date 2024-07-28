@@ -1,13 +1,12 @@
-import { SakeInfo } from '../data/sakes'
 import React, { useState } from 'react'
 import { useCart } from '../contexts/CartContext'
+import { ProductWithInfo } from '../types/api/product'
 
 interface ItemCardProps {
-  item: SakeInfo
-  href: string
+  item: ProductWithInfo
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ item, href }) => {
+const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
   const [quantity, setQuantity] = useState(0)
   const cartContext = useCart()
   const observer = new IntersectionObserver(entries => {
@@ -30,16 +29,21 @@ const ItemCard: React.FC<ItemCardProps> = ({ item, href }) => {
         node && observer.observe(node)
       }}
     >
-      {item.isHot && (
+      {item.is_hot && (
         <span className="inline-flex absolute top-2 left-2 items-center py-0.5 px-2.5 mb-2 text-xs font-medium text-red-800 bg-red-100 rounded-full dark:text-red-300 dark:bg-red-900">
           <span className="w-2 h-2 bg-red-500 rounded-full me-1"></span>
           熱銷
         </span>
       )}
-      <a href={`/sakes/${href}`}>
-        <img className="p-4 rounded-t-lg" src={item.images[0]} alt="product" />
+      <a href={`/sakes/${item.id}`}>
+        <img
+          className="p-4 rounded-t-lg"
+          src={item?.imageURLs[0]}
+          alt="product"
+          loading="lazy"
+        />
       </a>
-      <a href={`/sakes/${href}`}>
+      <a href={`/sakes/${item.id}`}>
         <div className="w-1/2 mx-auto mb-4 py-2 px-2 font-medium leading-none text-center rounded-full animate-pulse  text-md text-zinc-600 bg-zinc-200 dark:text-zinc-200 dark:bg-zinc-900">
           點擊看更多
         </div>

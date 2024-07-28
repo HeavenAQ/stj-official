@@ -103,13 +103,13 @@ const ProductRow: React.FC<ProductRowProps> = ({
       </td>
       <td>
         <img
-          src={item.product.images[0]}
+          src={item.product.imageURLs[0]}
           width="100"
           height="100"
           alt="product"
         />
       </td>
-      <td className="font-bold text-md">{item.product.title}</td>
+      <td className="font-bold text-md">{item.product.name}</td>
       <td className="hidden lg:table-cell">
         <Markdown
           components={{
@@ -118,7 +118,7 @@ const ProductRow: React.FC<ProductRowProps> = ({
             )
           }}
         >
-          {item.product.description.itemInfo}
+          {item.product.item_info}
         </Markdown>
       </td>
       <td className="rounded-tr-lg rounded-br-lg text-center">

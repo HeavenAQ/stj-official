@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import 'react-phone-number-input/style.css'
 import { redirect } from 'react-router-dom'
-import { updateUser, UserData } from '../api/user'
+import { updateUser } from '../api/user'
+import { UserDataResponse } from '../types/api/user'
 import PhoneInput from 'react-phone-number-input'
 import Loading from '../components/Loading'
-import { Gender } from '../types'
 import { useUserQuery } from '../utils/query'
 import { QueryClient, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-hot-toast'
@@ -12,6 +12,7 @@ import { AxiosError, HttpStatusCode } from 'axios'
 import { YearOptions } from '../utils/options'
 import { useGoogleMap } from '../utils/hooks'
 import GoogleMapInput from '../components/GoogleMapInput'
+import { Gender } from '../types/enums'
 
 // use default lat and lng for google map
 const lat = +import.meta.env.VITE_GOOGLE_MAP_DEFAULT_LAT
@@ -19,7 +20,7 @@ const lng = +import.meta.env.VITE_GOOGLE_MAP_DEFAULT_LNG
 
 const useUpdateUserMutation = (queryClient: QueryClient) => {
   return useMutation({
-    mutationFn: async (data: UserData) => {
+    mutationFn: async (data: UserDataResponse) => {
       return updateUser(data)
     },
     onError: error => {
@@ -47,8 +48,8 @@ const useUpdateUserMutation = (queryClient: QueryClient) => {
 }
 
 const UserInfo = () => {
-  // fetch user data
   const { data: user } = useUserQuery()
+  // fetch user data
   if (user === undefined) {
     redirect('/login')
   }
@@ -111,7 +112,7 @@ const UserInfo = () => {
 
     // update user data
     const address = selectedPlace?.formatted_address || backupAddress
-    const data: UserData = {
+    const data: UserDataResponse = {
       first_name: firstName,
       last_name: lastName,
       gender: gender as Gender,

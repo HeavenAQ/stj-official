@@ -55,7 +55,7 @@ const OrderSummaryStep: FC<OrderSummaryStepProps> = ({
         <p className="font-bold mt-10">購買商品：</p>
         {cartContext.cart.map((item, idx) => (
           <p key={idx} className="grid grid-cols-2">
-            <span>{item.product.title}</span>
+            <span>{item.product.name}</span>
             <span>{item.quantity} 支</span>
           </p>
         ))}
