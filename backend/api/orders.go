@@ -82,7 +82,7 @@ type CreateOrderResponse struct {
 
 func (server *Server) CreateOrder(ctx *gin.Context) {
 	var req CreateOrderRequest
-	user, err := helpers.AuthAndGetUser(ctx, req, server.store, authorizationHeaderKey)
+	user, err := helpers.AuthAndGetUser(ctx, req, server.store, authorizationPayloadKey)
 	if err != nil {
 		server.ErrorLogger.Println(err)
 		return

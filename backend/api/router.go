@@ -15,6 +15,7 @@ func (server *Server) setupV1Routes(api *gin.RouterGroup) {
 	server.setupV1ProductsRoutes(v1)
 	server.setupV1UsersRoutes(v1)
 	server.setupV1AuthRoutes(v1)
+	server.setupV1OrdersRoutes(v1)
 }
 
 func (server *Server) setupV1ProductsRoutes(v1 *gin.RouterGroup) {
@@ -37,9 +38,9 @@ func (server *Server) setupV1UsersRoutes(v1 *gin.RouterGroup) {
 
 func (server *Server) setupV1OrdersRoutes(v1 *gin.RouterGroup) {
 	orders := v1.Group("/orders").Use(server.authMiddleware(server.tokenMaker))
+	orders.POST("", server.CreateOrder)
 	orders.GET("", server.ListOrders)
 	orders.GET("/:id", server.GetOrder)
-	orders.POST("", server.CreateOrder)
 }
 
 func (server *Server) setupV1AuthRoutes(v1 *gin.RouterGroup) {

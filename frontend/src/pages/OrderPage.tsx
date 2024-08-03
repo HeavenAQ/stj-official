@@ -5,6 +5,8 @@ import { useUserDeliveryInfo } from '../utils/hooks'
 import { toast } from 'react-hot-toast'
 import CheckOrderStep from '../components/CheckOrderStep'
 import OrderSummaryStep from '../components/OrderSummaryStep'
+import { createOrder } from '../api/order'
+import { useCart } from '../contexts/CartContext'
 
 const activeContentStyle = (activeTab: number) => {
   switch (activeTab) {
@@ -13,7 +15,7 @@ const activeContentStyle = (activeTab: number) => {
     case 1:
       return 'translate-x-0'
     case 2:
-      return '-translate-x-[calc(100%/3)]'
+      return '-translate-x-0'
     default:
       return ''
   }
@@ -34,11 +36,8 @@ const StepButton: React.FC<StepButtonProps> = ({ text, onClick }) => {
   )
 }
 
-const submitOrder = async () => {
-  // submit order to backend
-}
-
 const OrderPage: React.FC = () => {
+  const cartContext = useCart()
   const [activeTab, setActiveTab] = useState(0)
   const [address, setAddress] = useState<string>('')
   const {
@@ -159,10 +158,27 @@ const OrderPage: React.FC = () => {
             <StepButton
               text="送出訂單"
               onClick={() => {
-                setAddress(selectedPlace?.formatted_address || backupAddress)
-                noEmptyFields()
-                  ? setActiveTab(prevTab => Math.min(prevTab + 1, 2))
-                  : toast.error('請填寫所有欄位')
+                createOrder({
+                  ShippingAddress: address,
+                  Phone: phone as string,
+                  Email: email,
+                  Items: cartContext.cart.map(item => ({
+                    productId: item.product.id,
+                    quantity: item.quantity,
+                    name: item.product.name
+                  }))
+                })
+                  .then(() => {
+                    cartContext.emptyCart()
+                    toast.success('訂單已送出')
+                    setTimeout(() => {
+                      window.location.href = '/'
+                    }, 2000)
+                  })
+                  .catch(e => {
+                    toast.error('訂單送出失敗，請再試一次')
+                    console.log(e)
+                  })
               }}
             />
           </div>

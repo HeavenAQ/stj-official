@@ -11,7 +11,6 @@ interface MainLayoutProps {
 }
 
 const showRightArrow = (i: number, locationPath: string[]) => {
-  console.log(i, locationPath[i])
   return (
     !(i + 1 < locationPath.length && isValidUUID(locationPath[i + 1])) && // if the next path is a valid UUID, it is the last path of the current path
     !locationPath[i] // ignore empty path

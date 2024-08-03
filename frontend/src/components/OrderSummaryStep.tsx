@@ -32,7 +32,7 @@ const OrderSummaryStep: FC<OrderSummaryStepProps> = ({
         <p className="font-bold mt-10">購買人資訊：</p>
         <p className="grid grid-cols-2">
           <span>姓名：</span>
-          <span>{firstName + ' ' + lastName}</span>
+          <span>{lastName + ' ' + firstName}</span>
         </p>
         <p className="grid grid-cols-2">
           <span>年齡：</span>
