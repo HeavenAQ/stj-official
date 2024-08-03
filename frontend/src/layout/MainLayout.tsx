@@ -4,14 +4,18 @@ import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
 import { MdKeyboardArrowRight } from 'react-icons/md'
 import { pathnameMap } from '../data/path'
+import { validate as isValidUUID } from 'uuid'
 
 interface MainLayoutProps {
   children: React.ReactNode
 }
 
 const showRightArrow = (i: number, locationPath: string[]) => {
-  const isNextNumber = !isNaN(Number(locationPath[i + 1]))
-  return i !== locationPath.length - 1 && !isNextNumber
+  console.log(i, locationPath[i])
+  return (
+    !(i + 1 < locationPath.length && isValidUUID(locationPath[i + 1])) && // if the next path is a valid UUID, it is the last path of the current path
+    !locationPath[i] // ignore empty path
+  )
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {

@@ -113,7 +113,7 @@ const ProductRow: React.FC<ProductRowProps> = ({
       <td className="hidden lg:table-cell">
         <Markdown
           components={{
-            ul: ({ node, ...props }) => (
+            ul: ({ ...props }) => (
               <ul className="ml-8 list-disc">{props.children}</ul>
             )
           }}
